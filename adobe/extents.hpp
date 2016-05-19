@@ -30,7 +30,7 @@ struct point_2d : boost::equality_comparable<point_2d<T>> {
     T x_m;
     T y_m;
 
-    friend inline void swap(const point_2d& x, const point_2d& y) BOOST_NOEXCEPT {
+    friend inline void swap(const point_2d& x, const point_2d& y) noexcept {
         swap(x.x_m, y.x_m);
         swap(x.y_m, y.y_m);
     }
@@ -120,7 +120,7 @@ std::ostream& operator<<(std::ostream& s, const extents_t::slice_t& x);
 namespace std {
 
 template <>
-inline void swap(adobe::extents_t::slice_t& x, adobe::extents_t::slice_t& y) BOOST_NOEXCEPT {
+inline void swap(adobe::extents_t::slice_t& x, adobe::extents_t::slice_t& y) noexcept {
     swap(x.length_m, y.length_m);
     swap(x.outset_m, y.outset_m);
     swap(x.frame_m, y.frame_m);
@@ -129,7 +129,7 @@ inline void swap(adobe::extents_t::slice_t& x, adobe::extents_t::slice_t& y) BOO
 }
 
 template <>
-inline void swap(adobe::extents_t& x, adobe::extents_t& y) BOOST_NOEXCEPT {
+inline void swap(adobe::extents_t& x, adobe::extents_t& y) noexcept {
     swap(x.slice_m, y.slice_m);
 }
 
