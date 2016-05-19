@@ -12,6 +12,7 @@ set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
 
 add_definitions ("-Wall")
 add_definitions ("-Werror")
+add_definitions ("-std=c++11")
 
 # There are two big choices this file makes - how to include Boost, and how to
 # include double-conversion, respectively. Build environments vary and we're
@@ -73,6 +74,7 @@ endfunction(target_link_boost_test)
 
 if (${USE_SYSTEM_BOOST})
     find_package(Boost COMPONENTS system filesystem thread unit_test_framework program_options REQUIRED)
+    include_directories(${Boost_INCLUDE_DIRS})
 else()
     message("ASL_INFO: Building boost ourselves.")
 
