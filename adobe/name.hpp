@@ -236,6 +236,15 @@ struct name_t : boost::totally_ordered<name_t, name_t> {
     explicit operator bool() const;
 
     /**
+        \return
+            \false iff the instance is equal to the empty string.
+
+        \complexity
+            O(1)
+    */
+    bool empty() const;
+
+    /**
         \complexity
             O(1)
     */

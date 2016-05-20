@@ -35,6 +35,10 @@ namespace adobe {
 
 /****************************************************************************************************/
 
+bool name_t::empty() const { return ptr_m == detail::empty_string_s(); }
+
+/****************************************************************************************************/
+
 static_name_t::operator bool() const { return static_cast<bool>(static_cast<name_t>(*this)); }
 
 /****************************************************************************************************/
@@ -43,7 +47,7 @@ bool operator<(const static_name_t& x, const static_name_t& y) { return name_t(x
 
 /****************************************************************************************************/
 
-name_t::operator bool() const { return ptr_m != detail::empty_string_s(); }
+name_t::operator bool() const { return !empty(); }
 
 /****************************************************************************************************/
 
