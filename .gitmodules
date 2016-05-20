@@ -1,0 +1,3 @@
+[submodule "double-conversion"]
+	path = double-conversion
+	url = git@github.com:stlab/double-conversion.git
