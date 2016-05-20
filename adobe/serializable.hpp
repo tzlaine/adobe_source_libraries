@@ -120,16 +120,16 @@ public:
         object()(s);
     }
 
-    const std::type_info& type_info() const {
+    boost::typeindex::type_index type_info() const {
         return object().type_info();
     }
 
     template <typename T>
     const T& cast() const {
-        const std::type_info& type(type_info());
+        boost::typeindex::type_index type(type_info());
 
-        if (type != typeid(T))
-            throw bad_cast(type, typeid(T));
+        if (type != boost::typeindex::type_id<T>())
+            throw bad_cast(type, boost::typeindex::type_id<T>());
 
         return static_cast<const T&>(reinterpret_cast<const instance<T>&>(object()).object_m);
     }
@@ -146,7 +146,7 @@ private:
         virtual instance_t* _copy() const = 0;
 
         virtual void operator()(std::ostream& s) const = 0;
-        virtual const std::type_info& type_info() const = 0;
+        virtual boost::typeindex::type_index type_info() const = 0;
     };
 
     template <typename T>
@@ -162,8 +162,8 @@ private:
             serialize<T>()(s, object_m);
         }
 
-        const std::type_info& type_info() const {
-            return typeid (T);
+        boost::typeindex::type_index type_info() const {
+            return boost::typeindex::type_id<T>();
         }
 
         T object_m;

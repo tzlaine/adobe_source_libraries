@@ -181,7 +181,7 @@ void pgmt(std::string seed) {
     typedef HashT hash_type;
     typedef typename hash_type::digest_type digest_type;
 
-    std::cout << "*** pseudorandomly generated messages test for " << typeid(hash_type).name()
+    std::cout << "*** pseudorandomly generated messages test for " << boost::typeindex::type_id<hash_type>().pretty_name()
               << '\n';
 
     std::string md[1003];
@@ -220,7 +220,7 @@ void test_hash(const C& container) {
     hash_type hash;
     std::size_t test_count(0);
 
-    std::cout << "*** " << typeid(hash).name() << " unit testing\n";
+    std::cout << "*** " << boost::typeindex::type_id<hash_type>().pretty_name() << " unit testing\n";
 
     for (auto& cur_test : container) {
         const std::string& test_string(cur_test.message_m);

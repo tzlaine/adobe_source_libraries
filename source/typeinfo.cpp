@@ -24,8 +24,8 @@ REVISIT (sparent) : This is only for debugging, but a reliable way to map a type
 be a useful addition.
 */
 
-bad_cast::bad_cast(const std::type_info& from, const std::type_info& to)
-    : what_m(string() + "bad_cast: " + from.name() + " -> " + to.name()) {}
+bad_cast::bad_cast(const boost::typeindex::type_index& from, const boost::typeindex::type_index& to)
+    : what_m(string() + "bad_cast: " + from.pretty_name() + " -> " + to.pretty_name()) {}
 
 bad_cast& bad_cast::operator=(const bad_cast& error) {
     what_m = error.what_m;

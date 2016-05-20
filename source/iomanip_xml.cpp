@@ -118,13 +118,13 @@ void xml_format::handle_atom(stream_type& os, bool is_push) {
 
         if (parent == seq_name_g && grandparent == bag_name_g && stack_n(1).num_out_m == 0) {
             os << "<key>" << value.cast<adobe::name_t>().c_str() << "</key>";
-        } else if (value.type_info() == typeid(string)) {
+        } else if (value.type_info() == boost::typeindex::type_id<string>()) {
             os << "<string>" << entity_escape(value.cast<string>()) << "</string>";
-        } else if (value.type_info() == typeid(name_t)) {
+        } else if (value.type_info() == boost::typeindex::type_id<name_t>()) {
             os << "<ident>" << value.cast<adobe::name_t>() << "</ident>";
-        } else if (value.type_info() == typeid(bool)) {
+        } else if (value.type_info() == boost::typeindex::type_id<bool>()) {
             os << "<bool>" << (value.cast<bool>() ? "true" : "false") << "</bool>";
-        } else if (value.type_info() == typeid(double)) {
+        } else if (value.type_info() == boost::typeindex::type_id<double>()) {
             double dbl_val(value.cast<double>());
             boost::int64_t int_val(static_cast<boost::int64_t>(dbl_val));
 
@@ -132,11 +132,11 @@ void xml_format::handle_atom(stream_type& os, bool is_push) {
                 os << "<integer>" << int_val << "</integer>";
             else
                 os << "<double>" << dbl_val << "</double>";
-        } else if (value.type_info() == typeid(empty_t)) {
+        } else if (value.type_info() == boost::typeindex::type_id<empty_t>()) {
             os << "<" << value.cast<empty_t>() << "/>";
-        } else if (value.type_info() == typeid(dictionary_t)) {
+        } else if (value.type_info() == boost::typeindex::type_id<dictionary_t>()) {
             os << value.cast<dictionary_t>();
-        } else if (value.type_info() == typeid(array_t)) {
+        } else if (value.type_info() == boost::typeindex::type_id<array_t>()) {
             os << value.cast<array_t>();
         } else {
             os << "<xml_unknown>" << value.type_info().name() << "</xml_unknown>";

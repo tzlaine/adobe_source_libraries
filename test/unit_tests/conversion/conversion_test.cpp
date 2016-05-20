@@ -30,6 +30,7 @@ struct other_derived : base {};
 
 
 BOOST_AUTO_TEST_CASE(conversion_test) {
+#if !defined(BOOST_NO_RTTI)
     using adobe::runtime_cast;
 
     {
@@ -49,4 +50,5 @@ BOOST_AUTO_TEST_CASE(conversion_test) {
         BOOST_CHECK(runtime_cast<const derived*>(x));
         derived y = runtime_cast<const derived&>(*x);
     }
+#endif
 }

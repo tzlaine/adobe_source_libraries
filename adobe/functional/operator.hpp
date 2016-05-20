@@ -10,8 +10,9 @@
 
 #include <adobe/config.hpp>
 
+#include <boost/type_index.hpp>
+
 #include <functional>
-#include <typeinfo>
 
 /**************************************************************************************************/
 
@@ -62,7 +63,7 @@ struct less {
         return x < y;
     }
 
-    bool operator()(const std::type_info& x, const std::type_info& y) { return x.before(y) != 0; }
+    bool operator()(const boost::typeindex::type_index& x, const boost::typeindex::type_index& y) { return x.before(y) != 0; }
 };
 
 struct greater_equal {
@@ -264,11 +265,11 @@ struct dec : public std::unary_function<T, T> {
 
 /// \brief typeid(x) wrapped in a function object
 struct typeid_ {
-    typedef std::type_info result_type;
+    typedef boost::typeindex::type_index result_type;
 
     template <typename T>
-    const result_type& operator()(T) const {
-        return typeid(T);
+    result_type operator()(T) const {
+        return boost::typeindex::type_id<T>();
     }
 };
 

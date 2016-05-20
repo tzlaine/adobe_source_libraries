@@ -26,6 +26,7 @@
 #include <boost/type_traits/remove_pointer.hpp>
 #include <boost/type_traits/remove_reference.hpp>
 #include <boost/concept_check.hpp>
+#include <boost/type_index.hpp>
 
 #include <adobe/conversion.hpp>
 #include <adobe/cstdint.hpp>
@@ -107,10 +108,10 @@ type.
 */
 
 /*!
-\fn const adobe::type_info_t& adobe::any_regular_t::type() const
+\fn boost::typeindex::type_index adobe::any_regular_t::type_info() const
 
 \return
-    The information returned by <code>typeid()</code> for the instance value.
+    The information returned by <code>boost::typeindex::type_id<T>()</code> for the instance value.
 */
 
 /*!
@@ -169,7 +170,7 @@ struct vtable_t {
 
     adobe::uintptr_t version;
     void (*destruct)(const interface_type&);
-    const std::type_info& (*type_info)(const interface_type&);
+    boost::typeindex::type_index (*type_info)(const interface_type&);
     interface_type* (*clone)(const interface_type&, void*);
     interface_type* (*move_clone)(interface_type&, void*);
     void (*assign)(interface_type&, const interface_type&);
@@ -201,7 +202,7 @@ struct any_regular_interface_t {
     pad_vtable_t object_m;
 
     void destruct() const { return object_m.vtable_m->destruct(*this); }
-    const std::type_info& type_info() const { return object_m.vtable_m->type_info(*this); }
+    boost::typeindex::type_index type_info() const { return object_m.vtable_m->type_info(*this); }
     interface_type* clone(void* x) const { return object_m.vtable_m->clone(*this, x); }
     interface_type* move_clone(void* x) { return object_m.vtable_m->move_clone(*this, x); }
     void assign(const interface_type& x) { object_m.vtable_m->assign(*this, x); }
@@ -232,7 +233,7 @@ struct any_regular_model_local : any_regular_interface_t, boost::noncopyable {
         return static_cast<any_regular_model_local&>(x);
     }
 
-    static const std::type_info& type_info(const interface_type&) { return typeid(T); }
+    static boost::typeindex::type_index type_info(const interface_type&) { return boost::typeindex::type_id<T>(); }
 
     static void destruct(const interface_type& x) { self(x).~any_regular_model_local(); }
 
@@ -324,7 +325,7 @@ struct any_regular_model_remote : any_regular_interface_t, boost::noncopyable {
         return static_cast<any_regular_model_remote&>(x);
     }
 
-    static const std::type_info& type_info(const interface_type&) { return typeid(T); }
+    static boost::typeindex::type_index type_info(const interface_type&) { return boost::typeindex::type_id<T>(); }
 
     static void destruct(const interface_type& x) { return self(x).~any_regular_model_remote(); }
 
@@ -517,7 +518,7 @@ public:
 
     template <typename T>
     bool cast(T& x) const {
-        if (type_info() != typeid(typename promote<T>::type))
+        if (type_info() != boost::typeindex::type_id<typename promote<T>::type>())
             return false;
         x = cast<T>();
         return true;
@@ -577,7 +578,7 @@ public:
         The information returned by <code>adobe::type_info<T>()</code> for the stored value.
     */
 
-    const std::type_info& type_info() const { return object().type_info(); }
+    boost::typeindex::type_index type_info() const { return object().type_info(); }
 
     /*!
     \brief Function object used in binding for instance value access.
@@ -687,7 +688,7 @@ inline void swap(any_regular_t& x, any_regular_t& y) {
 template <typename T>
 struct any_regular_t::helper {
     static inline T* ptr_cast(any_regular_t& r) {
-        if (r.type_info() != typeid(T))
+        if (r.type_info() != boost::typeindex::type_id<T>())
             return 0;
         return &reinterpret_cast<typename traits<T>::model_type&>(r.object()).get();
     }
@@ -695,8 +696,8 @@ struct any_regular_t::helper {
     static inline typename traits<T>::const_result_type cast(const any_regular_t& r) {
         typedef typename traits<T>::promote_type promote_type;
 
-        if (r.type_info() != typeid(promote_type))
-            throw bad_cast(r.type_info(), typeid(promote_type));
+        if (r.type_info() != boost::typeindex::type_id<promote_type>())
+            throw bad_cast(r.type_info(), boost::typeindex::type_id<promote_type>());
         return static_cast<typename traits<T>::const_result_type>(
             reinterpret_cast<const typename traits<T>::model_type&>(r.object()).get());
     }
@@ -704,8 +705,8 @@ struct any_regular_t::helper {
     static inline typename traits<T>::result_type cast(any_regular_t& r) {
         typedef typename traits<T>::promote_type promote_type;
 
-        if (r.type_info() != typeid(promote_type))
-            throw bad_cast(r.type_info(), typeid(promote_type));
+        if (r.type_info() != boost::typeindex::type_id<promote_type>())
+            throw bad_cast(r.type_info(), boost::typeindex::type_id<promote_type>());
         return static_cast<typename traits<T>::result_type>(
             reinterpret_cast<typename traits<T>::model_type&>(r.object()).get());
     }
@@ -713,7 +714,7 @@ struct any_regular_t::helper {
     static inline any_regular_t& assign(any_regular_t& r, const T& x) {
         typedef typename promote<T>::type promote_type;
 
-        if (r.type_info() == typeid(promote_type))
+        if (r.type_info() == boost::typeindex::type_id<promote_type>())
             r.cast<promote_type>() = static_cast<promote_type>(x);
         else {
             any_regular_t result(x);
@@ -748,7 +749,7 @@ struct any_regular_t::helper<any_regular_t> {
     \related adobe::version_1::any_regular_t
 */
 
-inline bool empty(const any_regular_t& x) { return x.type_info() == typeid(empty_t); }
+inline bool empty(const any_regular_t& x) { return x.type_info() == boost::typeindex::type_id<empty_t>(); }
 
 /**************************************************************************************************/
 
@@ -822,7 +823,7 @@ struct runtime_cast_t<R, const any_regular_t*> {
         BOOST_STATIC_ASSERT(
             (boost::is_same<typename promote<result_type>::type, result_type>::value));
 
-        if (x->type_info() != typeid(result_type))
+        if (x->type_info() != boost::typeindex::type_id<result_type>())
             return 0;
         return &x->cast<result_type>();
     }

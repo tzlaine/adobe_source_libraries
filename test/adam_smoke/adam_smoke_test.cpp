@@ -210,7 +210,11 @@ int main(int argc, char* argv[]) {
         }
     }
     catch (const std::exception& error) {
+#if defined(BOOST_NO_RTTI)
+        std::cerr << "std::exception: " << error.what() << "\n";
+#else
         std::cerr << "std::exception: " << typeid(error).name() << ": " << error.what() << "\n";
+#endif
     }
     catch (...) {
         std::cerr << "Unknown Exception\n";

@@ -147,7 +147,7 @@ void test_copy_on_write() {
         noisy_check_allocation();
         noisy_check_deallocation();
 
-        std::cout << "Testing " << typeid(CowType).name() << "...\n";
+        std::cout << "Testing " << boost::typeindex::type_id<CowType>().pretty_name() << "...\n";
     }
 
     // Test default constructor
@@ -361,7 +361,7 @@ BOOST_AUTO_TEST_CASE(CowType_allocator_rtti) {
     {
         typedef copy_on_write<int> cow_t;
 
-        std::cout << typeid(cow_t).name() << '\n';
+        std::cout << boost::typeindex::type_id<cow_t>().pretty_name() << '\n';
 
         // BOOST_CHECK(!t.requires_std_rtti());
     }
@@ -369,7 +369,7 @@ BOOST_AUTO_TEST_CASE(CowType_allocator_rtti) {
     {
         typedef copy_on_write<int, std::allocator<int>> cow_t;
 
-        std::cout << typeid(cow_t).name() << '\n';
+        std::cout << boost::typeindex::type_id<cow_t>().pretty_name() << '\n';
 
         // BOOST_CHECK(t.requires_std_rtti());
     }

@@ -43,17 +43,17 @@ struct any_json_helper_t {
         bool inited = false;
 
         static struct type_table_t {
-            const std::type_info* type_info_;
+            boost::typeindex::type_index type_info_;
             json_type type_;
         } table[] = {
-            { &typeid(object_type),  json_type::object },
-            { &typeid(array_type),   json_type::array },
-            { &typeid(string_type),  json_type::string },
-            { &typeid(double),       json_type::number },
-            { &typeid(bool),         json_type::boolean },
-            { &typeid(void),         json_type::null }
+            { boost::typeindex::type_id<object_type>(),  json_type::object },
+            { boost::typeindex::type_id<array_type>(),   json_type::array },
+            { boost::typeindex::type_id<string_type>(),  json_type::string },
+            { boost::typeindex::type_id<double>(),       json_type::number },
+            { boost::typeindex::type_id<bool>(),         json_type::boolean },
+            { boost::typeindex::type_id<void>(),         json_type::null }
         };
-        static const auto projection = [](const type_table_t& x)->const std::type_info& { return *x.type_info_; };
+        static const auto projection = [](const type_table_t& x)->const boost::typeindex::type_index& { return x.type_info_; };
 
         if (!inited) {
             adobe::sort(table, adobe::less(), projection);

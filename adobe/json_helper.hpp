@@ -41,14 +41,14 @@ struct asl_json_helper_t {
     typedef object_type::value_type pair_type;
 
     static json_type type(const value_type& x) {
-        const std::type_info& type(x.type_info());
+        const boost::typeindex::type_index type(x.type_info());
 
-        if (type == typeid(object_type)) return json_type::object;
-        else if (type == typeid(array_type)) return json_type::array;
-        else if (type == typeid(string_type)) return json_type::string;
-        else if (type == typeid(double)) return json_type::number;
-        else if (type == typeid(bool)) return json_type::boolean;
-        else if (type == typeid(adobe::empty_t)) return json_type::null;
+        if (type == boost::typeindex::type_id<object_type>()) return json_type::object;
+        else if (type == boost::typeindex::type_id<array_type>()) return json_type::array;
+        else if (type == boost::typeindex::type_id<string_type>()) return json_type::string;
+        else if (type == boost::typeindex::type_id<double>()) return json_type::number;
+        else if (type == boost::typeindex::type_id<bool>()) return json_type::boolean;
+        else if (type == boost::typeindex::type_id<adobe::empty_t>()) return json_type::null;
 
         ADOBE_ASSERT(false && "invalid type for serialization");
     }

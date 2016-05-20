@@ -108,7 +108,7 @@ void asl_cel_format::handle_atom(stream_type& os, bool is_push) {
             os << '\n' << indents(depth());
         }
 
-        if (value.type_info() == typeid(string)) {
+        if (value.type_info() == boost::typeindex::type_id<string>()) {
             bool escape(needs_entity_escape(value.cast<string>()));
 
             if (escape_m && escape)
@@ -120,7 +120,7 @@ void asl_cel_format::handle_atom(stream_type& os, bool is_push) {
 
             if (escape_m && escape)
                 os << ")";
-        } else if (value.type_info() == typeid(name_t)) {
+        } else if (value.type_info() == boost::typeindex::type_id<name_t>()) {
             if (!named_argument)
                 os << '@';
 
@@ -128,15 +128,15 @@ void asl_cel_format::handle_atom(stream_type& os, bool is_push) {
 
             if (outputting_bag && named_argument)
                 os << ": ";
-        } else if (value.type_info() == typeid(bool)) {
+        } else if (value.type_info() == boost::typeindex::type_id<bool>()) {
             os << (value.cast<bool>() ? "true" : "false");
-        } else if (value.type_info() == typeid(double)) {
+        } else if (value.type_info() == boost::typeindex::type_id<double>()) {
             os << value;
-        } else if (value.type_info() == typeid(empty_t)) {
+        } else if (value.type_info() == boost::typeindex::type_id<empty_t>()) {
             os << value.cast<empty_t>();
-        } else if (value.type_info() == typeid(dictionary_t)) {
+        } else if (value.type_info() == boost::typeindex::type_id<dictionary_t>()) {
             os << value.cast<dictionary_t>();
-        } else if (value.type_info() == typeid(array_t)) {
+        } else if (value.type_info() == boost::typeindex::type_id<array_t>()) {
             os << value.cast<array_t>();
         } else {
             os << "'" << value.type_info().name() << "'";

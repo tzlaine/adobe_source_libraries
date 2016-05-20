@@ -79,10 +79,15 @@ inline lht explicit_cast(const rht& rhs) {
 
 /*************************************************************************************************/
 
+#if defined(BOOST_NO_RTTI)
+template <typename R, typename T>
+struct runtime_cast_t;
+#else
 template <typename R, typename T>
 struct runtime_cast_t {
     R operator()(T& x) const { return dynamic_cast<R>(x); }
 };
+#endif
 
 template <typename R, typename T>
 inline R runtime_cast(T& x) {

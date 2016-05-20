@@ -314,7 +314,7 @@ void apply_layout_parameters(layout_attributes_t& data, const dictionary_t& para
     {
         dictionary_t::const_iterator iter(parameters.find(key_spacing));
         if (iter != parameters.end()) {
-            if (iter->second.type_info() == typeid(array_t)) {
+            if (iter->second.type_info() == boost::typeindex::type_id<array_t>()) {
                 const array_t& spacing_array = iter->second.cast<array_t>();
                 data.spacing_m.resize(spacing_array.size() + 1);
 
@@ -337,7 +337,7 @@ void apply_layout_parameters(layout_attributes_t& data, const dictionary_t& para
     {
         dictionary_t::const_iterator iter(parameters.find(key_margin));
         if (iter != parameters.end()) {
-            if (iter->second.type_info() == typeid(array_t)) {
+            if (iter->second.type_info() == boost::typeindex::type_id<array_t>()) {
                 const array_t& margin_array = iter->second.cast<array_t>();
 
                 data.vertical().margin_m.first = margin_array[0].cast<long>();

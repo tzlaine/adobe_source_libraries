@@ -202,16 +202,13 @@ public:
 
     stream_error_t(const std::exception& base, const line_position_t& position)
         : std::logic_error(base.what()) {
-        try {
-            const stream_error_t* error = dynamic_cast<const stream_error_t*>(&base);
+        line_position_set_m.push_back(position);
+    }
 
-            if (error)
-                line_position_set_m = error->line_position_set_m;
-
-            line_position_set_m.push_back(position);
-        }
-        catch (...) {
-        }
+    stream_error_t(const stream_error_t& error, const line_position_t& position)
+        : std::logic_error(error.what()) {
+        line_position_set_m = error.line_position_set_m;
+        line_position_set_m.push_back(position);
     }
 
     stream_error_t(const char* what, const line_position_t& position)

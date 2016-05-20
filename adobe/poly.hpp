@@ -18,6 +18,7 @@
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/type_traits/has_nothrow_constructor.hpp>
+#include <boost/type_index.hpp>
 
 #include <adobe/implementation/swap.hpp>
 #include <adobe/typeinfo.hpp>
@@ -65,7 +66,7 @@ struct poly_copyable_interface {
     virtual poly_copyable_interface* move_clone(void*) = 0;
     virtual void* cast() = 0;
     virtual const void* cast() const = 0;
-    virtual const std::type_info& type_info() const = 0;
+    virtual boost::typeindex::type_index type_info() const = 0;
 
     // Precondition of assignment: this->type_info() == x.type_info()
     virtual void assign(const poly_copyable_interface& x) = 0;
@@ -107,7 +108,7 @@ struct poly_state_remote : Interface {
         *value_ptr_m = *static_cast<const poly_state_remote&>(x).value_ptr_m;
     }
 
-    const std::type_info& type_info() const { return typeid(value_type); }
+    boost::typeindex::type_index type_info() const { return boost::typeindex::type_id<value_type>(); }
     const void* cast() const { return value_ptr_m; }
     void* cast() { return value_ptr_m; }
 
@@ -143,7 +144,7 @@ struct poly_state_local : Interface {
         value_m = static_cast<const poly_state_local&>(x).value_m;
     }
 
-    const std::type_info& type_info() const { return typeid(value_type); }
+    boost::typeindex::type_index type_info() const { return boost::typeindex::type_id<value_type>(); }
     const void* cast() const { return &value_m; }
     void* cast() { return &value_m; }
 
@@ -314,35 +315,35 @@ struct poly_base {
 
     template <typename J, template <typename> class K>
     static bool is_dynamic_convertible_from(const poly_base<J, K>& x) {
-        return dynamic_cast<const I*>(
-            static_cast<const poly_copyable_interface*>(&x.interface_ref()));
+        return boost::typeindex::type_id<I>() ==
+            static_cast<const poly_copyable_interface&>(x.interface_ref()).type_info();
     }
 
     template <typename J>
     bool is_dynamic_convertible_to() const {
-        return dynamic_cast<const J*>(
-                   static_cast<const poly_copyable_interface*>(&interface_ref())) != NULL;
+        return boost::typeindex::type_id<J>() ==
+            static_cast<const poly_copyable_interface&>(interface_ref()).type_info();
     }
 
-    const std::type_info& type_info() const { return interface_ref().type_info(); }
+    boost::typeindex::type_index type_info() const { return interface_ref().type_info(); }
 
     template <typename T>
     const T& cast() const {
-        if (type_info() != typeid(T))
-            throw bad_cast(type_info(), typeid(T));
+        if (type_info() != boost::typeindex::type_id<T>())
+            throw bad_cast(type_info(), boost::typeindex::type_id<T>());
         return *static_cast<const T*>(interface_ref().cast());
     }
 
     template <typename T>
     T& cast() {
-        if (type_info() != typeid(T))
-            throw bad_cast(type_info(), typeid(T));
+        if (type_info() != boost::typeindex::type_id<T>())
+            throw bad_cast(type_info(), boost::typeindex::type_id<T>());
         return *static_cast<T*>(interface_ref().cast());
     }
 
     template <typename T>
     bool cast(T& x) const {
-        if (type_info() != typeid(T))
+        if (type_info() != boost::typeindex::type_id<T>())
             return false;
         x = cast<T>();
         return true;
@@ -350,7 +351,7 @@ struct poly_base {
 
     template <typename T>
     poly_base& assign(const T& x) {
-        if (type_info() == typeid(T))
+        if (type_info() == boost::typeindex::type_id<T>())
             cast<T>() = x;
         else {
             poly_base tmp(x);
@@ -448,7 +449,7 @@ T poly_cast(poly<U>& x) {
     typedef typename boost::remove_reference<T>::type target_type;
     typedef typename target_type::interface_type target_interface_type;
     if (!x.template is_dynamic_convertible_to<target_interface_type>())
-        throw bad_cast(typeid(poly<U>), typeid(T));
+        throw bad_cast(boost::typeindex::type_id<poly<U>>(), boost::typeindex::type_id<T>());
     return reinterpret_cast<T>(x);
 }
 
@@ -466,7 +467,7 @@ T poly_cast(const poly<U>& x) {
     typedef typename boost::remove_reference<T>::type target_type;
     typedef typename target_type::interface_type target_interface_type;
     if (!x.template is_dynamic_convertible_to<target_interface_type>())
-        throw bad_cast(typeid(poly<U>), typeid(T));
+        throw bad_cast(boost::typeindex::type_id<poly<U>>(), boost::typeindex::type_id<T>());
     return reinterpret_cast<T>(x);
 }
 

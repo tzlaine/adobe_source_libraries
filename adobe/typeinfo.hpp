@@ -10,10 +10,11 @@
 
 /**************************************************************************************************/
 
+#include <boost/type_index.hpp>
+
 #include <adobe/config.hpp>
 
 #include <string>
-#include <typeinfo>
 
 /**************************************************************************************************/
 
@@ -27,13 +28,12 @@ namespace adobe {
 
 <code>adobe::bad_cast</code> is a decendant of <code>std::exception</code>.
 It is intended to provide detailed type information regarding the parameters
-into a cast that failed. If no <code>typeid()</code> information was used to
-construct the object, it simply relays "bad_cast".
-*/
+into a cast that failed. If no <code>boost::typeindex::type_id<T>()</code>
+information was used to construct the object, it simply relays "bad_cast".  */
 class bad_cast : public std::bad_cast {
 public:
     bad_cast();
-    bad_cast(const std::type_info& from, const std::type_info& to);
+    bad_cast(const boost::typeindex::type_index& from, const boost::typeindex::type_index& to);
     bad_cast(const bad_cast&);
     bad_cast& operator=(const bad_cast&);
     virtual ~bad_cast() throw();
