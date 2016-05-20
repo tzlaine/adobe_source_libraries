@@ -88,7 +88,7 @@ public:
         default constructor. The default instance will be released at exit.
     */
     copy_on_write() {
-        std::call_once(flag_s, init_default);
+        init_default();
         object_m = default_s;
         object_m->header_m.get().count_m.increment();
     }
@@ -364,6 +364,11 @@ struct copy_on_write<T, A>::implementation_t : private boost::noncopyable {
 
 template <typename T, typename A>
 void copy_on_write<T, A>::init_default() {
+    static bool init_flag = false;
+    if (init_flag)
+        return;
+    init_flag = true;
+
     implementation_allocator_type allocator;
 
     default_s = allocate(allocator);
