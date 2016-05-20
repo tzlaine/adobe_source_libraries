@@ -28,7 +28,6 @@ endif ()
 # repo and build it
 
 option(USE_SYSTEM_BOOST "use cmake found boost instead of ../boost_libraries" "ON")
-option(USE_STLAB_DOUBLECONV "use stlab mirror of double-conversion repository" "OFF")
 
 set(root_path ${CMAKE_SOURCE_DIR}/../)
 
@@ -44,15 +43,7 @@ function(setup_dep)
     add_subdirectory(${dep_path} ${CMAKE_BINARY_DIR}/imported/${name})
 endfunction()
 
-if (${USE_STLAB_DOUBLECONV})
-  setup_dep(URL https://github.com/stlab/double-conversion.git BRANCH master)
-  target_include_directories(double-conversion PUBLIC $<BUILD_INTERFACE:${root_path}>)
-else()
-  setup_dep(URL https://github.com/google/double-conversion.git BRANCH master)
-  target_include_directories(double-conversion PUBLIC $<BUILD_INTERFACE:${root_path}/double-conversion>)
-  # poorly named flag to fix include path
-  target_compile_definitions(double-conversion PUBLIC ADOBE_BUILT_WITH_CMAKE)
-endif()
+add_subdirectory(double-conversion)
 
 function(target_link_boost target)
     if (${USE_SYSTEM_BOOST})
