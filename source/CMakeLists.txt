@@ -16,7 +16,9 @@ target_compile_definitions(asl PUBLIC -DBOOST_RANGE_ENABLE_CONCEPT_ASSERT=0)
 # which is broken with BOOST_MOVE_USE_STANDARD_LIBRARY_MOVE flag...
 # fix is to conditionally remove boost thread dependency
 # NB: AppleClang lacks thread_local
-if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
+# NB: GCC apparently has it, but it does not seem to work on older implementations
+if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND
+    NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     target_compile_definitions(asl PUBLIC ADOBE_STD_THREAD_LOCAL)
 endif()
 
