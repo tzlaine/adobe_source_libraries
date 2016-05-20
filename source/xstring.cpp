@@ -61,6 +61,11 @@ ADOBE_THREAD_LOCAL_STORAGE(adobe::implementation::context_frame_t, thread_contex
 /**************************************************************************************************/
 
 void init_xstr_once() {
+    static bool init_flag(false);
+    if (init_flag)
+        return;
+    init_flag = true;
+
     // initialize the thread-specific context attribute set
 
     ADOBE_THREAD_LOCAL_STORAGE_INITIALIZE(thread_context);
@@ -120,8 +125,7 @@ void init_xstr_once() {
 
 
 void xstr_once() {
-    static once_flag flag;
-    call_once(flag, &init_xstr_once);
+    init_xstr_once();
 }
 
 /**************************************************************************************************/

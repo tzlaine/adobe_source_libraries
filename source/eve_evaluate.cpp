@@ -80,6 +80,11 @@ reflected_table_range_t* reflected_range_g;
 /**************************************************************************************************/
 
 void init_once_() {
+    static bool init_flag(false);
+    if (init_flag)
+        return;
+    init_flag = true;
+
     static alignment_table_t alignment_table_s = {
         {alignment_table_t::entry_type(key_align_left, adobe::layout_attributes_t::align_left),
          alignment_table_t::entry_type(key_align_right, adobe::layout_attributes_t::align_right),
@@ -120,8 +125,7 @@ void init_once_() {
 
 /**************************************************************************************************/
 
-once_flag flag;
-void init_once() { call_once(flag, &init_once_); }
+void init_once() { init_once_(); }
 
 /**************************************************************************************************/
 

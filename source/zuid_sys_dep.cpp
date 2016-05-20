@@ -93,6 +93,11 @@ ADOBE_THREAD_LOCAL_STORAGE_1(bool, zuid_ieee_node_inited, false)
 /*************************************************************************************************/
 
 void init_zuid_sys_dep_once_() {
+    static bool init_flag(false);
+    if (init_flag)
+        return;
+    init_flag = true;
+
     ADOBE_THREAD_LOCAL_STORAGE_INITIALIZE(zuid_uuid_state);
     ADOBE_THREAD_LOCAL_STORAGE_INITIALIZE(zuid_uuid_state_inited);
     ADOBE_THREAD_LOCAL_STORAGE_INITIALIZE(zuid_ieee_node);
@@ -101,9 +106,7 @@ void init_zuid_sys_dep_once_() {
 
 /*************************************************************************************************/
 
-static once_flag init_zuid_sys_dep_flag;
-
-void init_zuid_sys_dep_once() { call_once(init_zuid_sys_dep_flag, &init_zuid_sys_dep_once_); }
+void init_zuid_sys_dep_once() { init_zuid_sys_dep_once_(); }
 
 /*************************************************************************************************/
 

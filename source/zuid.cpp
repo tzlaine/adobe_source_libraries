@@ -100,6 +100,11 @@ ADOBE_THREAD_LOCAL_STORAGE(zuid_char_buffer_t, zuid_char_buffer)
 /*************************************************************************************************/
 
 void init_zuid_once_() {
+    static bool init_flag(false);
+    if (init_flag)
+        return;
+    init_flag = true;
+
     // initialize the thread-specific data
 
     ADOBE_THREAD_LOCAL_STORAGE_INITIALIZE(zuid_char_buffer);
@@ -107,9 +112,7 @@ void init_zuid_once_() {
 
 /*************************************************************************************************/
 
-once_flag init_zuid_flag;
-
-void init_zuid_once() { call_once(init_zuid_flag, &init_zuid_once_); }
+void init_zuid_once() { init_zuid_once_(); }
 
 /*************************************************************************************************/
 

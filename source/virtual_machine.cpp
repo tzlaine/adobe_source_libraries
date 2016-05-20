@@ -114,6 +114,11 @@ static type_table_t* type_table_g;
 /*************************************************************************************************/
 
 void get_type_name_init_() {
+    static bool init_flag(false);
+    if (init_flag)
+        return;
+    init_flag = true;
+
     static type_table_t type_table_s = {
         {type_table_t::entry_type(&boost::typeindex::type_id<double>().type_info(), "number"_name),
          type_table_t::entry_type(&boost::typeindex::type_id<bool>().type_info(), "boolean"_name),
@@ -130,8 +135,7 @@ void get_type_name_init_() {
 
 /*************************************************************************************************/
 
-once_flag get_type_name_flag;
-void get_type_name_init() { call_once(get_type_name_flag, &get_type_name_init_); }
+void get_type_name_init() { get_type_name_init_(); }
 
 /*************************************************************************************************/
 
@@ -399,6 +403,11 @@ namespace {
 /*************************************************************************************************/
 
 void virtual_machine_init_() {
+    static bool init_flag(false);
+    if (init_flag)
+        return;
+    init_flag = true;
+
     typedef operator_table_t::entry_type op_entry_type;
     typedef adobe::virtual_machine_t::implementation_t implementation_t;
 
@@ -467,8 +476,7 @@ void virtual_machine_init_() {
 
 /*************************************************************************************************/
 
-once_flag virtual_machine_init_flag;
-void virtual_machine_init() { call_once(virtual_machine_init_flag, &virtual_machine_init_); }
+void virtual_machine_init() { virtual_machine_init_(); }
 
 /*************************************************************************************************/
 

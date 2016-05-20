@@ -56,6 +56,11 @@ const int* simple_index_g;
 /**************************************************************************************************/
 
 void init_once() {
+    static bool init_flag(false);
+    if (init_flag)
+        return;
+    init_flag = true;
+
     static keyword_table_t keywords_s = {{adobe::empty_k, adobe::true_k, adobe::false_k}};
 
     /*
@@ -220,8 +225,7 @@ void init_once() {
 
 /**************************************************************************************************/
 
-static once_flag once_flag;
-void once_instance() { call_once(once_flag, &init_once); }
+void once_instance() { init_once(); }
 
 /**************************************************************************************************/
 

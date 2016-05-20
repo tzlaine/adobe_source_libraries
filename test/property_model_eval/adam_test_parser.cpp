@@ -63,6 +63,11 @@ adobe::static_name_t contributing_k = "contributing"_name;
 /*************************************************************************************************/
 
 void init_keyword_table() {
+    static bool init_flag(false);
+    if (init_flag)
+        return;
+    init_flag = true;
+
     static keyword_table_t keyword_table_s = {
         {assert_k, check_k, contributing_k, dump_k, print_k, reinitialize_k, update_k}};
 
@@ -71,7 +76,7 @@ void init_keyword_table() {
     keyword_table_g = &keyword_table_s;
 }
 
-void once_instance() { std::call_once(adobe_adam_test_parser, init_keyword_table); }
+void once_instance() { init_keyword_table(); }
 
 /*************************************************************************************************/
 
