@@ -24,7 +24,7 @@
 /*************************************************************************************************/
 
 #ifndef ADOBE_TEST_MICROSOFT_NO_DEPRECATE
-#define ADOBE_TEST_MICROSOFT_NO_DEPRECATE 1
+#define ADOBE_TEST_MICROSOFT_NO_DEPRECATE 0
 #endif
 
 #if ADOBE_TEST_MICROSOFT_NO_DEPRECATE
