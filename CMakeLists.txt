@@ -15,8 +15,10 @@ add_definitions ("-Werror")
 if (NOT MSVC)
     add_definitions ("-std=c++11")
     add_definitions ("-fno-rtti")
-    add_definitions ("-pthread")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
+    if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+        add_definitions ("-pthread")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
+    endif ()
 endif ()
 
 # There are two big choices this file makes - how to include Boost, and how to
