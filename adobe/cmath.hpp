@@ -128,9 +128,11 @@ using ::double_t;
 
 /*************************************************************************************************/
 
-using ::round;
-using ::lround;
-using ::trunc;
+inline double round(double x) { return ::roundf(x); }
+inline long lround(double x) { return ::lroundf(x); }
+inline double trunc(double x) { return ::truncf(x); }
+
+/*************************************************************************************************/
 
 inline float round(float x) { return ::roundf(x); }
 inline long lround(float x) { return ::lroundf(x); }
