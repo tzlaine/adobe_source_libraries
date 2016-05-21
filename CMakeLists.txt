@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.0)
-include(FindGit)
 include(CMakeParseArguments)
 enable_testing()
 
@@ -35,6 +34,7 @@ option(USE_SYSTEM_BOOST "use cmake found boost instead of ../boost_libraries" "O
 
 set(root_path ${CMAKE_SOURCE_DIR}/../)
 
+if (false)
 function(setup_dep)
     set(oneValueArgs URL BRANCH)
     cmake_parse_arguments(setup_dep "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -46,6 +46,7 @@ function(setup_dep)
     endif()
     add_subdirectory(${dep_path} ${CMAKE_BINARY_DIR}/imported/${name})
 endfunction()
+endif ()
 
 add_subdirectory(double-conversion)
 
