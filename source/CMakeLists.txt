@@ -19,7 +19,7 @@ target_compile_definitions(asl PUBLIC -DBOOST_RANGE_ENABLE_CONCEPT_ASSERT=0)
 # NB: GCC apparently has it, but it does not seem to work on older implementations
 if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND
     NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    target_compile_definitions(asl PUBLIC ADOBE_STD_THREAD_LOCAL)
+    #target_compile_definitions(asl PUBLIC ADOBE_STD_THREAD_LOCAL)
 endif()
 
 # GCC6 warning on boost 1.60
