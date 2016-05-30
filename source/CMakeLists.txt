@@ -24,7 +24,8 @@ endif()
 
 # GCC6 warning on boost 1.60
 # right operand of shift expression '(1u << 63u)' is >= than the precision of the left operand [-fpermissive]
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR
+    ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
     target_compile_definitions(asl PUBLIC ADOBE_FNV_NO_BIGINTS)
 endif()
 
