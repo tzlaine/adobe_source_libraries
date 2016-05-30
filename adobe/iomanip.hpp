@@ -16,6 +16,7 @@
 
 #include <adobe/config.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <iosfwd>
 #include <string>
