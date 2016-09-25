@@ -150,4 +150,6 @@ else()
 endif()
 
 add_subdirectory(source)
-add_subdirectory(test)
+if (NOT MSVC)
+  add_subdirectory(test)
+endif()
