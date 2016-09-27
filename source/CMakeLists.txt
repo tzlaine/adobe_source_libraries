@@ -38,3 +38,10 @@ endif()
 target_link_libraries(asl PUBLIC double-conversion)
 
 target_link_boost(asl)
+
+if (asl_install_directory)
+    install(
+        TARGETS asl
+        DESTINATION ${asl_install_directory}
+    )
+endif()
