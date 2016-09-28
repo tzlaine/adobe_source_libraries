@@ -1,6 +1,7 @@
 aux_source_directory(. SRC_LIST)
+aux_source_directory(spirit2 SPIRIT2_SRC_LIST)
 file(GLOB_RECURSE INC_LIST ../adobe/*.hpp)
-add_library(asl ${SRC_LIST} ${INC_LIST})
+add_library(asl ${SRC_LIST} ${SPIRIT2_SRC_LIST} ${INC_LIST})
 
 target_include_directories(asl PUBLIC ..)
 target_compile_definitions(asl PUBLIC ADOBE_STD_SERIALIZATION)

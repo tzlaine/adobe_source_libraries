@@ -153,3 +153,5 @@ add_subdirectory(source)
 if (NOT MSVC)
   add_subdirectory(test)
 endif()
+
+add_subdirectory(test/spirit2_parser)
