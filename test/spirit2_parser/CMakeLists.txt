@@ -36,5 +36,21 @@ target_compile_definitions(
     -DADAM_TEST=0
 )
 
+make_test(expr_parser_test_adam expr_parser_test.cpp)
+target_compile_definitions(
+    expr_parser_test_adam
+    PRIVATE
+    -DADAM_TEST=1
+)
+
+make_test(expr_parser_test_eve expr_parser_test.cpp)
+target_compile_definitions(
+    expr_parser_test_eve
+    PRIVATE
+    -DADAM_TEST=0
+)
+
 add_test_and_data(lexer_test_adam test_expressions adam_test_expressions_tokens)
 add_test_and_data(lexer_test_eve test_expressions eve_test_expressions_tokens)
+add_test_and_data(expr_parser_test_adam test_expressions)
+add_test_and_data(expr_parser_test_eve test_expressions)
