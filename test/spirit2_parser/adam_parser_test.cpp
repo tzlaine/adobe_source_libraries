@@ -52,7 +52,7 @@ struct store_add_cell_params_t
             std::cerr << position.stream_name() << ":"
                       << position.line_number_m << ":"
                       << position.line_start_m << ":"
-                          << position.position_m << ":";
+                      << position.position_m << ":";
             if (position.line_start_m) {
                 std::cerr << " \"" << std::string(m_str.begin() + position.line_start_m,
                                                   m_str.begin() + position.position_m)
@@ -246,7 +246,7 @@ BOOST_AUTO_TEST_CASE( adam_parser )
     bfs::path dir(g_examples_dir);
     bfs::directory_iterator const end_it;
     for (bfs::directory_iterator it(dir); it != end_it; ++it) {
-        std::string const & filename = it->path().native();
+        std::string const & filename = it->path().string();
         std::string const file_contents = read_file(filename);
 
         array_t new_parse;

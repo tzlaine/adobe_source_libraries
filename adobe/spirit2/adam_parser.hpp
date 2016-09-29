@@ -14,7 +14,7 @@ namespace adobe {
 
         const lexer_t& adam_lexer();
 
-        const expression_parser_rules_t::expression_rule_t& adam_expression_parser();
+        const expression_parser_rules_t& adam_expression_parser();
 
         bool parse(const std::string& sheet,
                    const std::string& filename,
