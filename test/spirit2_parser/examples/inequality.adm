@@ -1,0 +1,22 @@
+/*
+    Copyright 2013 Adobe
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+*/
+sheet slider_suite
+{
+interface:
+    value   : 42;
+    min_value   : 0;
+    max_value : 100;
+
+logic:
+    relate {
+        value <== min(value, max_value);
+        max_value <== max(value, max_value);
+    }
+    relate {
+        value <== max(value, min_value);
+        min_value <== min(value, min_value);
+    }
+}

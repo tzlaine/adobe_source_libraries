@@ -1,0 +1,28 @@
+/*
+    Copyright 2013 Adobe
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+*/
+layout assistive_example
+{
+    view dialog (name: "Assistive Example")
+    {
+        column(spacing: [10, 20])
+        {
+		   edit_number(name: "Pixels:", bind: @pixels, format: "#");
+		   edit_number(name: "Resolution:", bind: @resolution, format: "#.00");
+		   
+		   edit_number(name: "Inches:", bind: @inches, format: "#.00");
+		   
+		   edit_number(name: "File Size:", bind: @file_size, format: "#");
+		}
+        column()
+        {
+            button(name: "OK", bind: @result, action: @ok, default: true);
+            button( items:  [ 
+                                { name: "Cancel", action: @cancel },
+                                { name: "Reset", action: @reset, modifiers: @opt }
+                            ]);
+        }
+    }
+}

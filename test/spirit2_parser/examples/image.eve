@@ -1,0 +1,29 @@
+/*
+    Copyright 2013 Adobe
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+*/
+layout image
+{
+    view dialog(name: "Image Widget Test Dialog")
+    {
+        group(name: "Static Image")
+        {
+            image(image: "stop.tga");
+        }
+
+        group(name: "View/Controller-Bound Image")
+        {
+            edit_number(name: "Delta X", bind: @delta_x);
+            edit_number(name: "Delta Y", bind: @delta_y);
+
+            image(bind_view: @my_image, bind_controller: @image_metadata);
+        }
+
+        group(name: "View-Bound Image")
+        {
+            checkbox(name: "Other Image", bind: @other_image);
+            image(bind_view: @my_image);
+        }
+    }
+}

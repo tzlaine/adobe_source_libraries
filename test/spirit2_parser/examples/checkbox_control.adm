@@ -1,0 +1,20 @@
+/*
+    Copyright 2013 Adobe
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+*/
+sheet control_example
+{
+interface:
+    control         : true;
+    enable_me           : false <== control == true ? true : enable_me;
+    enable_me_too       : false <== control == true ? enable_me_too : false;
+    unlink remember_me  : false <== control == true ? true : remember_me;
+output:
+    result <==  {
+                    control: control,
+                    enable_me : enable_me,
+                    enable_me_too : enable_me_too,
+                    remember_me : remember_me
+                };
+}

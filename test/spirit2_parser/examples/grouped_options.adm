@@ -1,0 +1,27 @@
+/*
+    Copyright 2013 Adobe
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+*/
+sheet grouped_options
+{
+  interface:
+	a : true;
+	b : true;
+	c : true;
+	all;
+	
+  constant:
+  	true_ : [true, true, true];
+  	false_ : [false, false, false];
+
+  logic:
+
+	relate {
+		all <== [a, b, c] == true_ ? true : [a, b, c] == false_ ? false : empty;
+		a, b, c <== [all, all, all];
+	}
+
+ output:
+    result <== { a: a, b: b, c: c };
+}

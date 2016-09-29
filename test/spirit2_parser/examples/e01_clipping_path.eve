@@ -1,0 +1,22 @@
+/*
+    Copyright 2013 Adobe
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+*/
+layout clipping_path
+{
+    view dialog(name: "Clipping Path")
+    {
+        column(child_horizontal: align_fill)
+        {
+            popup(name: "Path:", bind: @path, items:
+            [
+                { name: "None", value: empty },
+                { name: "Path 1",   value: 1 },
+                { name: "Path 2",   value: 2 }
+            ]);
+            edit_number(name: "Flatness:", digits: 9, bind: @flatness);
+        }
+        button(name: "OK", default: true, bind: @result);
+    }
+}

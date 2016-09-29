@@ -1,0 +1,36 @@
+/*
+    Copyright 2013 Adobe
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+*/
+sheet assistive_example
+{
+ input:
+    pixel_size : 8;
+    
+ interface:
+    /* pixels and resolution are properties. */
+    pixels : 100 <== round(pixels); // Correction
+    resolution : 72;
+    
+    inches; // Related Value
+    
+    file_size; // Prediction
+
+ logic:
+    relate {
+        pixels      <== round(inches * resolution);
+        inches      <== pixels / resolution;
+        resolution  <== pixels / inches;
+    }
+    relate {
+        file_size   <== pixels * pixel_size;
+        pixels      <== round(file_size / pixel_size);
+    }
+    
+ output:
+    result <== { pixels: pixels, resolution: resolution };
+    
+ invariant:
+    pixels_bound <== pixels < 1000;  // Validation
+}

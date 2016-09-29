@@ -1,0 +1,20 @@
+/*
+    Copyright 2013 Adobe
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+*/
+layout image
+{
+    view dialog(name: "Toggle", placement: place_row)
+    {
+        checkbox(name: "Disabled", bind: @disabled);
+        checkbox(indent: 20, name: "Value", bind: @my_cell, value_off: empty);
+
+        toggle(value_on: true, bind: @my_cell,
+               image_on: image('preset_button_d_n.tga'),
+               image_off: image('preset_button_u_n.tga'),
+               image_disabled: image('preset_button_u_d.tga'));
+
+        button(name: 'close', action: @cancel);
+    }
+}

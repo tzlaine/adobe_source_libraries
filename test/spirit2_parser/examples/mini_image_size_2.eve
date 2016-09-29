@@ -1,0 +1,41 @@
+/*
+    Copyright 2013 Adobe
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+*/
+layout mini_image_size
+{
+ interface:
+ 	original : false;
+    view dialog (name: "Mini Image Size")
+    {
+        column()
+        {
+            edit_number(name: "Height:", digits: 7, 
+                                    units: [    { name: "pixels", bind: @height_pixels, format: "#" },
+                                                { name: "percent", bind: @height_percent, format: "#.00" }  ]);
+                                                
+            edit_number(name: "Width:", digits: 7, 
+                                    units: [    { name: "pixels", bind: @width_pixels, format: "#" },
+                                                { name: "percent", bind: @width_percent, format: "#.00" }  ]);
+
+            checkbox(name: "Constrain Proportions", bind: @constrain);
+			reveal(name: "Original Document", bind: @original);
+			optional(bind: @original, horizontal: align_fill)
+			{
+			   display_number(name: "Document Height:", bind: @original_height, format: "#",
+					units: [{ name: "pixels", format: "#", scale: [ 1, 0 ] }]);
+			   display_number(name: "Document Width:", bind: @original_width, format: "#",
+					units: [{ name: "pixels", format: "#", scale: [ 1, 0 ] }]);
+			}
+        }
+        column()
+        {
+            button(name: "OK", action: @ok, default: true);
+            button( items:  [ 
+                                { name: "Cancel", action: @cancel },
+                                { name: "Reset", action: @reset, modifiers: @opt }
+                            ]);
+        }
+    }
+}

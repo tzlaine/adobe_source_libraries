@@ -1,0 +1,21 @@
+/*
+    Copyright 2013 Adobe
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+*/
+layout checkbox_control
+{
+    view dialog(name: "Control Example", placement: place_column)
+    {
+        column(spacing: 10)
+        {
+            checkbox(name: "Control", bind: @control);
+            checkbox(name: "Make Mixed Control", bind: @control, value_on: @mixed, value_off: false);
+            checkbox(name: "Enable me", bind: @enable_me);
+            checkbox(name: "Enable me too", bind: @enable_me_too);
+            checkbox(name: "Remember me", bind: @remember_me);
+        }
+    
+        button(name: "Close", default: true, action: @cancel, horizontal: align_right);
+    }
+}

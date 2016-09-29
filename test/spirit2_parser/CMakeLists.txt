@@ -11,13 +11,22 @@ endmacro ()
 macro (add_test_and_data name)
     get_target_property(bin_location ${name} RUNTIME_OUTPUT_DIRECTORY)
     foreach (arg ${ARGN})
-        get_filename_component(filename_without_path ${arg} NAME)
-        add_custom_command(
-            TARGET ${name} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_SOURCE_DIR}/${filename_without_path}"
-            $<TARGET_FILE_DIR:${name}>
-        )
+        if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${arg})
+            add_custom_command(
+                TARGET ${name} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_CURRENT_SOURCE_DIR}/${arg}"
+                "$<TARGET_FILE_DIR:${name}>/${arg}"
+            )
+        else ()
+            get_filename_component(filename_without_path ${arg} NAME)
+            add_custom_command(
+                TARGET ${name} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${CMAKE_CURRENT_SOURCE_DIR}/${filename_without_path}"
+                $<TARGET_FILE_DIR:${name}>
+            )
+        endif ()
     endforeach ()
     add_test(NAME ${name}_ COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name})
 endmacro ()
@@ -50,7 +59,10 @@ target_compile_definitions(
     -DADAM_TEST=0
 )
 
+make_test(adam_parser_test adam_parser_test.cpp)
+
 add_test_and_data(lexer_test_adam test_expressions adam_test_expressions_tokens)
 add_test_and_data(lexer_test_eve test_expressions eve_test_expressions_tokens)
 add_test_and_data(expr_parser_test_adam test_expressions)
 add_test_and_data(expr_parser_test_eve test_expressions)
+add_test_and_data(adam_parser_test examples)

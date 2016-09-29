@@ -1,0 +1,20 @@
+/*
+    Copyright 2013 Adobe
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+*/
+sheet image
+{
+constant:
+    image1 : image(name: "stop.tga");
+    image2 : image(name: "small_warning_icon.tga");
+
+interface:
+    other_image    : false;
+    my_image       : image2 <== other_image ? image1 : image2;
+
+    image_metadata : { x: 0, y: 0 };
+
+    delta_x <== image_metadata.x;
+    delta_y <== image_metadata.y;
+}

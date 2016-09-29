@@ -1,0 +1,48 @@
+/*
+    Copyright 2013 Adobe
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+*/
+sheet mini_image_size
+{
+ input:
+    original_width_      : 5 * 300;
+    original_height_     : 7 * 300;
+    
+ interface:
+    constrain           : true;
+
+    width_pixels        : original_width_    <== round(width_pixels);
+    height_pixels       : original_height_   <== round(height_pixels);
+    width_percent;
+    height_percent;
+
+ logic:
+    relate {
+        width_pixels    <== round(width_percent * original_width_ / 100);
+        width_percent   <== width_pixels * 100 / original_width_;
+    }
+    
+    relate {
+        height_pixels   <== round(height_percent * original_height_ / 100);
+        height_percent  <== height_pixels * 100 / original_height_;
+    }
+
+    when (constrain) relate {
+        width_percent   <== height_percent;
+        height_percent  <== width_percent;
+    }
+
+ output:
+    result <== { height: height_pixels, width: width_pixels };
+    
+    
+    
+    
+    
+    
+    
+    
+    /* REVISIT (sparent) : should be able to monitor input cells. */
+    original_width <== original_width_; original_height <== original_height_;
+}
