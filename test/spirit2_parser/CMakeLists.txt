@@ -60,9 +60,11 @@ target_compile_definitions(
 )
 
 make_test(adam_parser_test adam_parser_test.cpp)
+make_test(eve_parser_test eve_parser_test.cpp)
 
 add_test_and_data(lexer_test_adam test_expressions adam_test_expressions_tokens)
 add_test_and_data(lexer_test_eve test_expressions eve_test_expressions_tokens)
 add_test_and_data(expr_parser_test_adam test_expressions)
 add_test_and_data(expr_parser_test_eve test_expressions)
 add_test_and_data(adam_parser_test examples)
+add_test_and_data(eve_parser_test examples)
