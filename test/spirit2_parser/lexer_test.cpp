@@ -1,6 +1,7 @@
 // #define BOOST_SPIRIT_LEXERTL_DEBUG
 
 #include <adobe/spirit2/lexer.hpp>
+#include <adobe/implementation/token.hpp>
 
 #include <boost/spirit/home/qi/action.hpp>
 #include <boost/spirit/home/qi/char.hpp>
@@ -25,22 +26,6 @@ char const * const g_expected_output_file = "adam_test_expressions_tokens";
 #else
 char const * const g_expected_output_file = "eve_test_expressions_tokens";
 #endif
-
-namespace {
-    using namespace adobe;
-    static_name_t const input_k      = "input"_name;
-    static_name_t const output_k     = "output"_name;
-    static_name_t const interface_k  = "interface"_name;
-    static_name_t const logic_k      = "logic"_name;
-    static_name_t const constant_k   = "constant"_name;
-    static_name_t const invariant_k  = "invariant"_name;
-    static_name_t const sheet_k      = "sheet"_name;
-    static_name_t const unlink_k     = "unlink"_name;
-    static_name_t const when_k       = "when"_name;
-    static_name_t const relate_k     = "relate"_name;
-    static_name_t const layout_k     = "layout"_name;
-    static_name_t const view_k       = "view"_name;
-}
 
 namespace adobe { namespace spirit2 {
 
@@ -233,16 +218,16 @@ namespace adobe { namespace spirit2 {
 BOOST_AUTO_TEST_CASE( adam_lexer )
 {
     static const adobe::name_t s_keywords[] = {
-        input_k,
-        output_k,
-        interface_k,
-        logic_k,
-        constant_k,
-        invariant_k,
-        sheet_k,
-        unlink_k,
-        when_k,
-        relate_k
+        adobe::input_k,
+        adobe::output_k,
+        adobe::interface_k,
+        adobe::logic_k,
+        adobe::constant_k,
+        adobe::invariant_k,
+        adobe::sheet_k,
+        adobe::unlink_k,
+        adobe::when_k,
+        adobe::relate_k
     };
     const std::size_t s_num_keywords = sizeof(s_keywords) / sizeof(s_keywords[0]);
 
@@ -277,10 +262,10 @@ BOOST_AUTO_TEST_CASE( adam_lexer )
 BOOST_AUTO_TEST_CASE( eve_lexer )
 {
     static const adobe::name_t s_keywords[] = {
-        interface_k,
-        constant_k,
-        layout_k,
-        view_k
+        adobe::interface_k,
+        adobe::constant_k,
+        adobe::layout_k,
+        adobe::view_k
     };
     const std::size_t s_num_keywords = sizeof(s_keywords) / sizeof(s_keywords[0]);
 

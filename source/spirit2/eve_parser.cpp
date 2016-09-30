@@ -12,15 +12,6 @@ namespace adobe { namespace spirit2 {
 
 namespace {
 
-    static_name_t interface_k  = "interface"_name;
-    static_name_t constant_k   = "constant"_name;
-    static_name_t layout_k     = "layout"_name;
-    static_name_t logic_k      = "logic"_name;
-    static_name_t relate_k     = "relate"_name;
-    static_name_t unlink_k     = "unlink"_name;
-    static_name_t view_k       = "view"_name;
-    static_name_t when_k       = "when"_name;
-
     const lexer_t& eve_lexer()
     {
         static const name_t s_keywords[] = {

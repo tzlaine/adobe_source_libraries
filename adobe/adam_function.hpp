@@ -37,6 +37,10 @@ private:
     std::vector<array_t> m_statements;
 };
 
+/** The map of functions used to evaluate user-defined Adam functions in Adam
+    and Eve expressions. */
+typedef closed_hash_map<name_t, adam_function_t> adam_functions_t;
+
 }
 
 #endif

@@ -8,14 +8,6 @@ using namespace adobe::spirit2;
 
 namespace {
 
-    static_name_t constant_k     = "constant"_name;
-    static_name_t if_k           = "if"_name;
-    static_name_t else_k         = "else"_name;
-    static_name_t for_k          = "for"_name;
-    static_name_t continue_k     = "continue"_name;
-    static_name_t break_k        = "break"_name;
-    static_name_t return_k       = "return"_name;
-
     struct array_t_push_back_t
     {
         template <typename ...T>

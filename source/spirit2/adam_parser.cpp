@@ -34,24 +34,6 @@ namespace spirit2 {
 
 namespace {
 
-    static_name_t input_k      = "input"_name;
-    static_name_t output_k     = "output"_name;
-    static_name_t interface_k  = "interface"_name;
-    static_name_t logic_k      = "logic"_name;
-    static_name_t constant_k   = "constant"_name;
-    static_name_t invariant_k  = "invariant"_name;
-    static_name_t external_k   = "external"_name;
-    static_name_t sheet_k      = "sheet"_name;
-    static_name_t unlink_k     = "unlink"_name;
-    static_name_t when_k       = "when"_name;
-    static_name_t relate_k     = "relate"_name;
-    static_name_t if_k         = "if"_name;
-    static_name_t else_k       = "else"_name;
-    static_name_t for_k        = "for"_name;
-    static_name_t continue_k   = "continue"_name;
-    static_name_t break_k      = "break"_name;
-    static_name_t return_k     = "return"_name;
-
     struct add_cell_t
     {
         template <typename ...T>

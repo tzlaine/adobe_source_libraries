@@ -4,6 +4,7 @@
 #include <adobe/algorithm/lower_bound.hpp>
 #include <adobe/algorithm/sort.hpp>
 #include <adobe/implementation/adam_parser_impl.hpp>
+#include <adobe/implementation/token.hpp>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -20,22 +21,6 @@
 
 char const * const g_input_file = "test_expressions";
 
-
-namespace {
-    using namespace adobe;
-    static_name_t const input_k      = "input"_name;
-    static_name_t const output_k     = "output"_name;
-    static_name_t const interface_k  = "interface"_name;
-    static_name_t const logic_k      = "logic"_name;
-    static_name_t const constant_k   = "constant"_name;
-    static_name_t const invariant_k  = "invariant"_name;
-    static_name_t const sheet_k      = "sheet"_name;
-    static_name_t const unlink_k     = "unlink"_name;
-    static_name_t const when_k       = "when"_name;
-    static_name_t const relate_k     = "relate"_name;
-    static_name_t const layout_k     = "layout"_name;
-    static_name_t const view_k       = "view"_name;
-}
 
 namespace adobe {
 
@@ -136,16 +121,16 @@ namespace adobe { namespace spirit2 {
 BOOST_AUTO_TEST_CASE( adam_expression_parser )
 {
     static const adobe::name_t s_keywords[] = {
-        input_k,
-        output_k,
-        interface_k,
-        logic_k,
-        constant_k,
-        invariant_k,
-        sheet_k,
-        unlink_k,
-        when_k,
-        relate_k
+        adobe::input_k,
+        adobe::output_k,
+        adobe::interface_k,
+        adobe::logic_k,
+        adobe::constant_k,
+        adobe::invariant_k,
+        adobe::sheet_k,
+        adobe::unlink_k,
+        adobe::when_k,
+        adobe::relate_k
     };
     const std::size_t s_num_keywords = sizeof(s_keywords) / sizeof(s_keywords[0]);
 
@@ -156,16 +141,16 @@ BOOST_AUTO_TEST_CASE( adam_expression_parser )
     using boost::spirit::qi::_val;
 
     assert(tok.keywords.size() == 10u);
-    const boost::spirit::lex::token_def<adobe::name_t>& input = tok.keywords[input_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& output = tok.keywords[output_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& interface = tok.keywords[interface_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& logic = tok.keywords[logic_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& constant = tok.keywords[constant_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& invariant = tok.keywords[invariant_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& sheet = tok.keywords[sheet_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& unlink = tok.keywords[unlink_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& when = tok.keywords[when_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& relate = tok.keywords[relate_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& input = tok.keywords[adobe::input_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& output = tok.keywords[adobe::output_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& interface = tok.keywords[adobe::interface_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& logic = tok.keywords[adobe::logic_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& constant = tok.keywords[adobe::constant_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& invariant = tok.keywords[adobe::invariant_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& sheet = tok.keywords[adobe::sheet_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& unlink = tok.keywords[adobe::unlink_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& when = tok.keywords[adobe::when_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& relate = tok.keywords[adobe::relate_k];
     assert(tok.keywords.size() == 10u);
 
     static adobe::spirit2::expression_parser_rules_t::keyword_rule_t adam_keywords =
@@ -213,10 +198,10 @@ BOOST_AUTO_TEST_CASE( adam_expression_parser )
 BOOST_AUTO_TEST_CASE( eve_expression_parser )
 {
     static const adobe::name_t s_keywords[] = {
-        interface_k,
-        constant_k,
-        layout_k,
-        view_k
+        adobe::interface_k,
+        adobe::constant_k,
+        adobe::layout_k,
+        adobe::view_k
     };
     const std::size_t s_num_keywords = sizeof(s_keywords) / sizeof(s_keywords[0]);
 
@@ -227,10 +212,10 @@ BOOST_AUTO_TEST_CASE( eve_expression_parser )
     using boost::spirit::qi::_val;
 
     assert(tok.keywords.size() == 4u);
-    const boost::spirit::lex::token_def<adobe::name_t>& interface = tok.keywords[interface_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& constant = tok.keywords[constant_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& layout = tok.keywords[layout_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& view = tok.keywords[view_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& interface = tok.keywords[adobe::interface_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& constant = tok.keywords[adobe::constant_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& layout = tok.keywords[adobe::layout_k];
+    const boost::spirit::lex::token_def<adobe::name_t>& view = tok.keywords[adobe::view_k];
     assert(tok.keywords.size() == 4u);
 
     static adobe::spirit2::expression_parser_rules_t::keyword_rule_t eve_keywords =

@@ -4,6 +4,8 @@
 #include <adobe/implementation/lex_shared.hpp>
 #include <adobe/implementation/token.hpp>
 
+#include <boost/container/flat_set.hpp>
+
 
 namespace adobe {
 
@@ -439,8 +441,8 @@ adam_function_t::adam_function_t(name_t name,
     m_parameter_names(parameter_names),
     m_statements(statements)
 {
-    std::set<name_t> declared_vars(m_parameter_names.begin(),
-                                   m_parameter_names.end());
+    boost::container::flat_set<name_t> declared_vars(m_parameter_names.begin(),
+                                                     m_parameter_names.end());
     for (std::size_t i = 0; i < m_statements.size(); ++i) {
         name_t op_name;
         m_statements[i][m_statements[i].size() - 1].cast(op_name);

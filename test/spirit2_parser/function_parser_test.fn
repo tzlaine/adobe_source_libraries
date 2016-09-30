@@ -1,0 +1,609 @@
+f0 () {
+}
+
+f1 (foo) {
+}
+
+f2 (foo, bar) {
+}
+
+f3 () {
+    constant a: 1 + 2;
+}
+
+f4 () {
+    b: 1 + 2;
+}
+
+f5 () {
+    c;
+    c = 1 + 2;
+}
+
+f6 () {
+    d: 0;
+    return d + 1;
+}
+
+f7 () {
+    constant a: 1 + 2;
+    b: 1 + 2;
+    c;
+    c = 1 + 2;
+    d: 0;
+    return d + 1;
+}
+
+f8 (d) {
+    return d + 1;
+}
+
+f9 () {
+    c: 0;
+    d: c + 1;
+    return d + 1;
+}
+
+f10 () {
+    if (false) {
+    }
+}
+
+f11 () {
+    if (false)
+        return 1;
+}
+
+f12 () {
+    if (false) {
+        return 1;
+    }
+}
+
+f13 () {
+    if (false)
+        return 1;
+    else
+        return @none;
+}
+
+f14 () {
+    c;
+    if (false) {
+        c = 1 + 2;
+        return 1;
+    } else {
+        c = 1 + 2;
+        return @none;
+    }
+}
+
+f15 () {
+    if (false)
+        return 1;
+    else if (true)
+        return @none;
+}
+
+f16 () {
+    c;
+    if (false) {
+        c = 1 + 2;
+        return 1;
+    } else if (true) {
+        return @none;
+        c = 1 + 2;
+    }
+}
+
+f17 () {
+    if (false) {
+        c;
+        c = 1 + 2;
+        return 1;
+    } else if (false) {
+    } else if (false) {
+    } else {
+    }
+}
+
+f18 () {
+    if (false) {
+        c;
+        c = 1 + 2;
+        return 1;
+    } else if (false) {
+    } else if (false) {
+    } else {
+        c;
+        if (false) {
+            c = 1 + 2;
+            return 1;
+        } else if (true) {
+            if (false) {
+            }
+            return @none;
+            c = 1 + 2;
+        }
+    }
+}
+
+f19 () {
+    if (false) {
+    } else if (false) {
+    } else if (false) {
+        c;
+        c = 1 + 2;
+        return 1;
+    } else {
+    }
+}
+
+f20 () {
+    if (false) {
+    } else if (false) {
+    } else if (false) {
+    } else {
+    }
+}
+
+f21 () {
+    if (false)
+        return 0;
+    else if (false)
+        return 0;
+    else if (false)
+        return 0;
+    else
+        return 0;
+}
+
+empty_fn () {
+}
+
+simple_number_fn () {
+    return 1;
+}
+
+decl_fn () {
+    a: @none;
+    return a;
+}
+
+const_decl_fn () {
+    constant b: @none;
+    return b;
+}
+
+shadowed_param_1_fn (const_cell) {
+    return const_cell;
+}
+
+shadowed_param_2_fn (const_cell) {
+    const_cell = [];
+    return const_cell;
+}
+
+shadowed_param_3_fn () {
+    const_cell: [];
+    return const_cell;
+}
+
+assignment_fn () {
+    c: [];
+    c = {};
+    return c;
+    c = 1;
+    return c;
+}
+
+simple_if_1_fn (x) {
+    if (x)
+        return 1;
+}
+
+simple_if_2_fn (x) {
+    if (x)
+        return 1;
+    else
+        return 0;
+}
+
+nested_ifs_fn (x, y, z) {
+    if (x) {
+        if (y) {
+            if (z)
+                return 0;
+            else
+                return 1;
+        } else {
+            if (z)
+                return 2;
+            else
+                return 3;
+        }
+    } else {
+        if (y) {
+            if (z)
+                return 4;
+            else
+                return 5;
+        } else {
+            if (z)
+                return 6;
+            else
+                return 7;
+        }
+    }
+}
+
+chained_ifs_fn (x, y, z) {
+    if (x) {
+        return 0;
+    } else if (y) {
+        return 1;
+    } else if (z) {
+        return 2;
+    } else {
+        return 3;
+    }
+}
+
+scoped_decl_if_test_1_fn () {
+    x: true;
+    x: false;
+}
+
+scoped_decl_if_test_2_fn () {
+    if (true) {
+        x: true;
+        x: false;
+    }
+}
+
+scoped_decl_if_test_3_fn () {
+    x: true;
+    y: false;
+    if (x) {
+        x: 2;
+        y = true;
+    }
+    return [x, y];
+}
+
+scoped_decl_simple_for_test_1_fn () {
+    seq: [];
+    for (key, value: seq) {
+    }
+}
+
+scoped_decl_simple_for_test_2_fn () {
+    seq: [0, 1];
+    x: 3;
+    retval: [];
+    for (x: seq) {
+        y: true;
+        retval = append(retval, x);
+    }
+    for (x: seq) {
+        y: true;
+        retval = append(retval, x);
+    }
+    return retval;
+}
+
+scoped_decl_simple_for_test_3_fn () {
+    seq: {one: 0, two: 1};
+    key;
+    value: 3;
+    retval: [];
+    for (key, value: seq) {
+        y: true;
+        retval = append(retval, value);
+    }
+    for (key, value: seq) {
+        y: true;
+        retval = append(retval, value);
+    }
+    return retval;
+}
+
+scoped_decl_complex_for_test_1_fn () {
+    seq: [0, 1];
+    x: 3;
+    retval: [];
+    for (i: 0; i < size(seq); i = i + 1) {
+        y: true;
+        x: seq[i];
+        retval = append(retval, x);
+    }
+    for (i: 0; i < size(seq); i = i + 1) {
+        y: true;
+        x: seq[i];
+        retval = append(retval, x);
+    }
+    return retval;
+}
+
+scoped_decl_simple_for_test_4_fn () {
+    seq: [0, 1];
+    x: 3;
+    for (x: seq) {
+    }
+    return x;
+}
+
+scoped_decl_simple_for_test_5_fn () {
+    seq: {one: 0, two: 1};
+    value: 3;
+    for (key, value: seq) {
+    }
+    return value;
+}
+
+scoped_decl_complex_for_test_2_fn () {
+    seq: [0, 1];
+    x: 3;
+    for (i: 0; i < size(seq); i = i + 1) {
+        x: seq[i];
+    }
+    return x;
+}
+
+slow_size_impl(state, value) {
+    return state + 1;
+}
+
+slow_size(seq) {
+    return fold(seq, 0, @slow_size_impl);
+}
+
+simple_for_1(seq) {
+    z: {};
+    for (x: seq) {
+        z = insert(z, x.key, x.value);
+    }
+    return z == seq;
+}
+
+simple_for_2(seq) {
+    z: {};
+    for (key, value: seq) {
+        z = insert(z, key, value);
+    }
+    return z == seq;
+}
+
+complex_for_1(seq) {
+    z: [];
+    for (x: 0; x < size(seq); x = x + 1) {
+        z = append(z, seq[x]);
+    }
+    return z == seq;
+}
+
+complex_for_2(seq) {
+    z: [];
+    for (x: 0, y: 1; x < size(seq) && y < size(seq); x = x + 1, y = y + 1) {
+        z = append(z, seq[x], seq[y]);
+    }
+    return z;
+}
+
+complex_for_3(i_, j_) {
+    z: [];
+    for (i: 0; i < i_; i = i + 1) {
+        for (j: 0; j < j_; j = j + 1) {
+            z = append(z, [i, j]);
+        }
+    }
+    return z;
+}
+
+complex_for_4(seq, j_) {
+    z: [];
+    for (key, value: seq) {
+        for (j: 0; j < j_; j = j + 1) {
+            z = append(z, [value, j]);
+        }
+    }
+    return z;
+}
+
+simple_for_return_test_1(seq) {
+    z: {};
+    for (x: seq) {
+        if (true)
+            return 3;
+    }
+    return z == seq;
+}
+
+simple_for_return_test_2(seq) {
+    z: {};
+    for (key, value: seq) {
+        if (true)
+            return 3;
+    }
+    return z == seq;
+}
+
+complex_for_return_test_1(seq) {
+    z: [];
+    for (x: 0; x < size(seq); x = x + 1) {
+        if (true)
+            return 3;
+    }
+    return z == seq;
+}
+
+complex_for_return_test_2(i_, j_) {
+    z: [];
+    for (i: 0; i < i_; i = i + 1) {
+        for (j: 0; j < j_; j = j + 1) {
+            if (true)
+                return 3;
+        }
+    }
+    return z;
+}
+
+simple_for_continue_test_1(seq, key) {
+    z: {};
+    for (x: seq) {
+        continue;
+        z = insert(z, x.key, x.value);
+    }
+    return z;
+}
+
+simple_for_continue_test_2(seq, key) {
+    z: {};
+    for (x: seq) {
+        if (x.key == key)
+            continue;
+        z = insert(z, x.key, x.value);
+    }
+    return z;
+}
+
+simple_for_continue_test_3(seq, key_) {
+    z: {};
+    for (key, value: seq) {
+        if (key == key_)
+            continue;
+        z = insert(z, key, value);
+    }
+    return z;
+}
+
+complex_for_continue_test_1(seq, i) {
+    z: [];
+    for (x: 0; x < size(seq); x = x + 1) {
+        if (x == i)
+            continue;
+        z = append(z, seq[x]);
+    }
+    return z;
+}
+
+complex_for_continue_test_2(i_, j_, x, y) {
+    z: [];
+    for (i: 0; i < i_; i = i + 1) {
+        if (i == x)
+            continue;
+        for (j: 0; j < j_; j = j + 1) {
+            if (j == y)
+                continue;
+            z = append(z, [i, j]);
+        }
+    }
+    return z;
+}
+
+simple_for_break_test_1(seq) {
+    z: {};
+    for (x: seq) {
+        break;
+        z = insert(z, x.key, x.value);
+    }
+    return z;
+}
+
+simple_for_break_test_2(seq) {
+    z: {};
+    for (x: seq) {
+        z = insert(z, x.key, x.value);
+        break;
+    }
+    return z;
+}
+
+simple_for_break_test_3(seq, key) {
+    z: {};
+    for (x: seq) {
+        if (x.key == key)
+            break;
+        z = insert(z, x.key, x.value);
+    }
+    return z;
+}
+
+simple_for_break_test_4(seq, key_) {
+    z: {};
+    for (key, value: seq) {
+        if (key == key_)
+            break;
+        z = insert(z, key, value);
+    }
+    return z;
+}
+
+complex_for_break_test_1(seq, i) {
+    z: [];
+    for (x: 0; x < size(seq); x = x + 1) {
+        if (x == i)
+            break;
+        z = append(z, seq[x]);
+    }
+    return z;
+}
+
+complex_for_break_test_2(i_, j_, x, y) {
+    z: [];
+    for (i: 0; i < i_; i = i + 1) {
+        if (i == x)
+            break;
+        for (j: 0; j < j_; j = j + 1) {
+            if (j == y)
+                break;
+            z = append(z, [i, j]);
+        }
+    }
+    return z;
+}
+
+lvalue_assignment_test_1(seq) {
+    seq.foo = 'bar';
+    return seq;
+}
+
+lvalue_assignment_test_2(seq) {
+    seq[@foo] = 'bar';
+    return seq;
+}
+
+lvalue_assignment_test_3(seq) {
+    seq[1] = 'bar';
+    return seq;
+}
+
+lvalue_assignment_test_4(seq) {
+    seq[1].foo = 'bar';
+    return seq;
+}
+
+lvalue_assignment_test_5(seq) {
+    seq[1][@foo] = 'bar';
+    return seq;
+}
+
+lvalue_assignment_test_6(seq) {
+    seq[1][1] = 'bar';
+    return seq;
+}
+
+lvalue_assignment_test_7(seq) {
+    seq.foo.foo = 'bar';
+    return seq;
+}
+
+lvalue_assignment_test_8(seq) {
+    seq.foo[1] = 'bar';
+    return seq;
+}
+
+lvalue_assignment_test_9(seq) {
+    seq[@foo][1] = 'bar';
+    return seq;
+}

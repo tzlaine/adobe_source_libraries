@@ -1,3 +1,23 @@
+'~'
+identifier -- a
+'~'
+identifier -- a
+'('
+identifier -- a
+bitshift_op -- .bitwise_lshift
+identifier -- b
+')'
+'|'
+'('
+identifier -- c
+bitshift_op -- .bitwise_rshift
+identifier -- d
+')'
+'&'
+identifier -- f
+'^'
+'~'
+identifier -- g
 number -- 3.14159
 identifier -- f
 '('
