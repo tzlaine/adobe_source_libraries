@@ -16,7 +16,7 @@ macro (add_test_and_data name)
                 TARGET ${name} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_directory
                 "${CMAKE_CURRENT_SOURCE_DIR}/${arg}"
-                "$<TARGET_FILE_DIR:${name}>/${arg}"
+                "${CMAKE_CURRENT_BINARY_DIR}/${arg}"
             )
         else ()
             get_filename_component(filename_without_path ${arg} NAME)
@@ -24,11 +24,11 @@ macro (add_test_and_data name)
                 TARGET ${name} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${CMAKE_CURRENT_SOURCE_DIR}/${filename_without_path}"
-                $<TARGET_FILE_DIR:${name}>
+                ${CMAKE_CURRENT_BINARY_DIR}
             )
         endif ()
     endforeach ()
-    add_test(NAME ${name}_ COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name})
+    add_test(NAME ${name}_ COMMAND ${name})
 endmacro ()
 
 make_test(lexer_test_adam lexer_test.cpp)
