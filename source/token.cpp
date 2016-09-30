@@ -76,6 +76,17 @@ static_name_t bitwise_rshift_k = ".bitwise_rshift"_name;
 static_name_t bitwise_lshift_k = ".bitwise_lshift"_name;
 static_name_t bitwise_negate_k = ".bitwise_negate"_name;
 
+static_name_t const_decl_k = ".const_decl"_name;
+static_name_t decl_k = ".decl"_name;
+static_name_t lvalue_k = ".lvalue"_name;
+static_name_t return_k = ".return"_name;
+static_name_t stmt_ifelse_k = ".stmt_ifelse"_name;
+static_name_t simple_for_k = ".simple_for"_name;
+static_name_t for_decl_k = ".for_decl"_name;
+static_name_t complex_for_k = ".complex_for"_name;
+static_name_t continue_k = ".continue"_name;
+static_name_t break_k = ".break"_name;
+
 /*************************************************************************************************/
 
 } // namespace adobe

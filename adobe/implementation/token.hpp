@@ -86,6 +86,17 @@ extern static_name_t bitwise_rshift_k;
 extern static_name_t bitwise_lshift_k;
 extern static_name_t bitwise_negate_k;
 
+extern static_name_t const_decl_k;
+extern static_name_t decl_k;
+extern static_name_t lvalue_k;
+extern static_name_t return_k;
+extern static_name_t stmt_ifelse_k;
+extern static_name_t simple_for_k;
+extern static_name_t for_decl_k;
+extern static_name_t complex_for_k;
+extern static_name_t continue_k;
+extern static_name_t break_k;
+
 /*************************************************************************************************/
 
 } // namespace adobe
