@@ -21,6 +21,7 @@
 #include <adobe/array_fwd.hpp>
 #include <adobe/name.hpp>
 #include <adobe/dictionary_fwd.hpp>
+#include <adobe/adam_function_fwd.hpp>
 
 /*************************************************************************************************/
 
@@ -41,12 +42,14 @@ public:
     typedef any_regular_t(named_index_lookup_signature_t)(const any_regular_t&, name_t index);
     typedef any_regular_t(numeric_index_lookup_signature_t)(const any_regular_t&,
                                                             std::size_t index);
+    typedef const adam_function_t&(adam_function_lookup_signature_t)(name_t);
 
     typedef boost::function<variable_lookup_signature_t> variable_lookup_t;
     typedef boost::function<dictionary_function_lookup_signature_t> dictionary_function_lookup_t;
     typedef boost::function<array_function_lookup_signature_t> array_function_lookup_t;
     typedef boost::function<named_index_lookup_signature_t> named_index_lookup_t;
     typedef boost::function<numeric_index_lookup_signature_t> numeric_index_lookup_t;
+    typedef boost::function<adam_function_lookup_signature_t> adam_function_lookup_t;
 
     typedef any_regular_t(binary_op_override_signature_t)(const any_regular_t&,
                                                           const any_regular_t&);
@@ -76,6 +79,7 @@ public:
     void set_dictionary_function_lookup(const dictionary_function_lookup_t&);
     void set_named_index_lookup(const named_index_lookup_t&);
     void set_numeric_index_lookup(const numeric_index_lookup_t&);
+    void set_adam_function_lookup(const adam_function_lookup_t&);
 
     void override_operator(name_t, const binary_op_override_t&);
 

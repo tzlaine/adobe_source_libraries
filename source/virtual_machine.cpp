@@ -31,6 +31,7 @@
 #include <adobe/once.hpp>
 #include <adobe/static_table.hpp>
 #include <adobe/string.hpp>
+#include <adobe/adam_function.hpp>
 #include <adobe/virtual_machine.hpp>
 
 #ifndef NDEBUG
@@ -339,6 +340,7 @@ public:
     dictionary_function_lookup_t dictionary_function_lookup_m;
     named_index_lookup_t named_index_lookup_m;
     numeric_index_lookup_t numeric_index_lookup_m;
+    adam_function_lookup_t adam_function_lookup_m;
 
     // override maps
     binary_op_override_map_t binary_op_override_map_m;
@@ -819,8 +821,20 @@ void virtual_machine_t::implementation_t::function_operator() {
             value_stack_m.back() = array_func(arguments);
         else if (array_function_lookup_m)
             value_stack_m.back() = array_function_lookup_m(function_name, arguments);
-        else
+        else if (!adam_function_lookup_m)
             throw_function_not_defined(function_name);
+
+        if (adam_function_lookup_m) {
+            const adam_function_t& f = adam_function_lookup_m(function_name);
+            value_stack_m.back() = f(
+                array_function_lookup_m,
+                dictionary_function_lookup_m,
+                adam_function_lookup_m,
+                arguments
+            );
+        } else {
+            throw_function_not_defined(function_name);
+        }
     } else {
         // handle named parameter functions
         dictionary_function_t dictionary_func;
@@ -830,8 +844,20 @@ void virtual_machine_t::implementation_t::function_operator() {
             value_stack_m.back() = dictionary_func(arguments);
         else if (dictionary_function_lookup_m)
             value_stack_m.back() = dictionary_function_lookup_m(function_name, arguments);
-        else
+        else if (!adam_function_lookup_m)
             throw_function_not_defined(function_name);
+
+        if (adam_function_lookup_m) {
+            const adam_function_t& f = adam_function_lookup_m(function_name);
+            value_stack_m.back() = f(
+                array_function_lookup_m,
+                dictionary_function_lookup_m,
+                adam_function_lookup_m,
+                arguments
+            );
+        } else {
+            throw_function_not_defined(function_name);
+        }
     }
 }
 
@@ -887,6 +913,12 @@ void virtual_machine_t::set_named_index_lookup(const named_index_lookup_t& funct
 
 void virtual_machine_t::set_numeric_index_lookup(const numeric_index_lookup_t& function) {
     object_m->numeric_index_lookup_m = function;
+}
+
+/*************************************************************************************************/
+
+void virtual_machine_t::set_adam_function_lookup(const adam_function_lookup_t& function) {
+    object_m->adam_function_lookup_m = function;
 }
 
 /*************************************************************************************************/
