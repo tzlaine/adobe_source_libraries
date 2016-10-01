@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE( function_parser )
     std::cout << "functions:\"\n" << file_contents << "\n\"\n"
               << "filename: " << g_input_file << '\n';
 
-    adam_functions_t functions;
+    adam_function_map_t functions;
     bool pass = spirit2::parse_functions(file_contents, g_input_file, functions);
     std::cout << (pass ? "PASS" : "FAIL") << "\n";
 

@@ -15,7 +15,7 @@ namespace {
         { typedef void type; };
 
         void operator()(
-            adam_functions_t& arg1,
+            adam_function_map_t& arg1,
             name_t arg2,
             const std::vector<name_t>& arg3,
             const std::vector<array_t>& arg4
@@ -70,7 +70,7 @@ function_parser_rules_t::function_parser_rules_t(
 
 bool parse_functions(const std::string& functions,
                      const std::string& filename,
-                     adam_functions_t& retval)
+                     adam_function_map_t& retval)
 {
     using boost::spirit::qi::phrase_parse;
     text_iterator_t it(functions.begin());

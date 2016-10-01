@@ -16,7 +16,7 @@ struct function_parser_rules_t
 
     typedef boost::spirit::qi::rule<
         token_iterator_t,
-        void(adam_functions_t&),
+        void(adam_function_map_t&),
         boost::spirit::qi::locals<
             name_t,
             std::vector<name_t>,
@@ -32,7 +32,7 @@ struct function_parser_rules_t
 
 bool parse_functions(const std::string& functions,
                      const std::string& filename,
-                     adam_functions_t&);
+                     adam_function_map_t&);
 
 } }
 

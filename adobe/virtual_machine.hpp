@@ -16,6 +16,7 @@
 #define BOOST_FUNCTION_NO_DEPRECATED
 #include <boost/function.hpp>
 #include <boost/operators.hpp>
+#include <boost/optional.hpp>
 
 #include <adobe/any_regular.hpp>
 #include <adobe/array_fwd.hpp>
@@ -42,7 +43,7 @@ public:
     typedef any_regular_t(named_index_lookup_signature_t)(const any_regular_t&, name_t index);
     typedef any_regular_t(numeric_index_lookup_signature_t)(const any_regular_t&,
                                                             std::size_t index);
-    typedef const adam_function_t&(adam_function_lookup_signature_t)(name_t);
+    typedef boost::optional<const adam_function_t&>(adam_function_lookup_signature_t)(name_t);
 
     typedef boost::function<variable_lookup_signature_t> variable_lookup_t;
     typedef boost::function<dictionary_function_lookup_signature_t> dictionary_function_lookup_t;

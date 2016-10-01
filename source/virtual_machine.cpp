@@ -810,6 +810,11 @@ void virtual_machine_t::implementation_t::function_operator() {
     adobe::name_t function_name(back().cast<adobe::name_t>());
     pop_back();
 
+    const auto adam_function =
+        adam_function_lookup_m ?
+        adam_function_lookup_m(function_name) :
+        boost::optional<const adam_function_t&>();
+
     if (back().type_info() == boost::typeindex::type_id<adobe::array_t>()) {
         // handle unnamed parameter functions
         array_function_t array_func;
@@ -817,21 +822,17 @@ void virtual_machine_t::implementation_t::function_operator() {
 
         // handle function lookup
 
-        if ((*array_function_table_g)(function_name, array_func))
+        if ((*array_function_table_g)(function_name, array_func)) {
             value_stack_m.back() = array_func(arguments);
-        else if (array_function_lookup_m)
-            value_stack_m.back() = array_function_lookup_m(function_name, arguments);
-        else if (!adam_function_lookup_m)
-            throw_function_not_defined(function_name);
-
-        if (adam_function_lookup_m) {
-            const adam_function_t& f = adam_function_lookup_m(function_name);
-            value_stack_m.back() = f(
+        } else if (adam_function) {
+            value_stack_m.back() = (*adam_function)(
                 array_function_lookup_m,
                 dictionary_function_lookup_m,
                 adam_function_lookup_m,
                 arguments
             );
+        } else if (array_function_lookup_m) {
+            value_stack_m.back() = array_function_lookup_m(function_name, arguments);
         } else {
             throw_function_not_defined(function_name);
         }
@@ -840,21 +841,17 @@ void virtual_machine_t::implementation_t::function_operator() {
         dictionary_function_t dictionary_func;
         adobe::dictionary_t arguments(back().cast<adobe::dictionary_t>());
 
-        if ((*dictionary_function_table_g)(function_name, dictionary_func))
+        if ((*dictionary_function_table_g)(function_name, dictionary_func)) {
             value_stack_m.back() = dictionary_func(arguments);
-        else if (dictionary_function_lookup_m)
-            value_stack_m.back() = dictionary_function_lookup_m(function_name, arguments);
-        else if (!adam_function_lookup_m)
-            throw_function_not_defined(function_name);
-
-        if (adam_function_lookup_m) {
-            const adam_function_t& f = adam_function_lookup_m(function_name);
-            value_stack_m.back() = f(
+        } else if (adam_function) {
+            value_stack_m.back() = (*adam_function)(
                 array_function_lookup_m,
                 dictionary_function_lookup_m,
                 adam_function_lookup_m,
                 arguments
             );
+        } else if (dictionary_function_lookup_m) {
+            value_stack_m.back() = dictionary_function_lookup_m(function_name, arguments);
         } else {
             throw_function_not_defined(function_name);
         }

@@ -140,32 +140,27 @@ namespace {
                     if (value_stack.back().type_info() == boost::typeindex::type_id<name_t>()) {
                         retval.m_lvalue =
                             &retval.m_lvalue->cast<dictionary_t>()[value_stack.back().cast<name_t>()];
-                        value_stack.pop_back();
                     } else {
-                        any_regular_t index = sheet.inspect(value_stack.back().cast<array_t>());
-                        value_stack.pop_back();
-                        if (index.type_info() == boost::typeindex::type_id<name_t>()) {
-                            retval.m_lvalue =
-                                &retval.m_lvalue->cast<dictionary_t>()[index.cast<name_t>()];
-                        } else {
-                            array_t& array = retval.m_lvalue->cast<array_t>();
-                            std::size_t i = index.cast<std::size_t>();
-                            if (array.size() <= i)
-                                throw std::runtime_error("lvalue index: array index out of range");
-                            retval.m_lvalue = &array[i];
-                        }
+                        std::size_t index(static_cast<std::size_t>(value_stack.back().cast<double>()));
+                        array_t& array = retval.m_lvalue->cast<array_t>();
+                        if (array.size() <= index)
+                            throw std::runtime_error("lvalue index: array index out of range");
+                        retval.m_lvalue = &array[index];
                     }
-                } else if (op == ifelse_k) {
-                    lvalue_t else_ =
-                        evaluate_lvalue_expression(sheet, get, value_stack.back().cast<array_t>());
                     value_stack.pop_back();
-                    lvalue_t if_ =
-                        evaluate_lvalue_expression(sheet, get, value_stack.back().cast<array_t>());
+                } else if (op == ifelse_k) {
+                    array_t else_expr = value_stack.back().cast<array_t>();
+                    value_stack.pop_back();
+                    array_t then_expr = value_stack.back().cast<array_t>();
                     value_stack.pop_back();
                     bool condition =
                         sheet.inspect(value_stack.back().cast<array_t>()).cast<bool>();
                     value_stack.pop_back();
-                    retval = condition ? if_ : else_;
+                    retval = evaluate_lvalue_expression(
+                        sheet,
+                        get,
+                        condition ? then_expr : else_expr
+                    );
                 }
             } else {
                 value_stack.push_back(*it);
