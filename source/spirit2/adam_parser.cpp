@@ -34,6 +34,26 @@ namespace spirit2 {
 
 namespace {
 
+    static_name_t const layout_k = "layout"_name;
+    static_name_t const view_k = "view"_name;
+    static_name_t const input_k = "input"_name;
+    static_name_t const output_k = "output"_name;
+    static_name_t const interface_k = "interface"_name;
+    static_name_t const logic_k = "logic"_name;
+    static_name_t const constant_k = "constant"_name;
+    static_name_t const invariant_k = "invariant"_name;
+    static_name_t const external_k = "external"_name;
+    static_name_t const sheet_k = "sheet"_name;
+    static_name_t const unlink_k = "unlink"_name;
+    static_name_t const when_k = "when"_name;
+    static_name_t const relate_k = "relate"_name;
+    static_name_t const if_k = "if"_name;
+    static_name_t const else_k = "else"_name;
+    static_name_t const for_k = "for"_name;
+    static_name_t const return_keyword_k = "return"_name;
+    static_name_t const break_keyword_k = "breakd"_name;
+    static_name_t const continue_keyword_k = "continue"_name;
+
     struct add_cell_t
     {
         template <typename ...T>
@@ -248,9 +268,9 @@ const lexer_t& adam_lexer()
         if_k,
         else_k,
         for_k,
-        continue_k,
-        break_k,
-        return_k
+        continue_keyword_k,
+        break_keyword_k,
+        return_keyword_k
     };
     static const std::size_t s_num_keywords = sizeof(s_keywords) / sizeof(s_keywords[0]);
 
@@ -283,9 +303,9 @@ const expression_parser_rules_t& adam_expression_parser()
         | tok.keywords[if_k][_val = _1]
         | tok.keywords[else_k][_val = _1]
         | tok.keywords[for_k][_val = _1]
-        | tok.keywords[continue_k][_val = _1]
-        | tok.keywords[break_k][_val = _1]
-        | tok.keywords[return_k][_val = _1]
+        | tok.keywords[continue_keyword_k][_val = _1]
+        | tok.keywords[break_keyword_k][_val = _1]
+        | tok.keywords[return_keyword_k][_val = _1]
         ;
     assert(tok.keywords.size() == initial_size);
     adam_keywords.name("keyword");

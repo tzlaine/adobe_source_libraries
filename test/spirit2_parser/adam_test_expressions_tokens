@@ -633,7 +633,6 @@ keyword -- output
 keyword -- interface
 '@'
 keyword -- interface
-keyword -- logic
 '@'
 keyword -- logic
 keyword -- constant
@@ -645,13 +644,10 @@ keyword -- invariant
 keyword -- sheet
 '@'
 keyword -- sheet
-keyword -- unlink
 '@'
 keyword -- unlink
-keyword -- when
 '@'
 keyword -- when
-keyword -- relate
 '@'
 keyword -- relate
 '['

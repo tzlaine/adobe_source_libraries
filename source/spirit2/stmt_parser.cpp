@@ -3,10 +3,36 @@
 #include <adobe/implementation/token.hpp>
 
 
+#ifdef ADOBE_STD_SERIALIZATION
+
+// requirements of spirit::qi::debug.
+namespace std {
+
+inline std::ostream& operator<<(std::ostream& out, const adobe::array_t& x) {
+    out << "[ ";
+    for (const auto& e : x) {
+        out << e << " ";
+    }
+    out << "]";
+    return out;
+}
+
+}
+
+#endif
+
 using namespace adobe;
 using namespace adobe::spirit2;
 
 namespace {
+
+    static_name_t const constant_k = "constant"_name;
+    static_name_t const if_k = "if"_name;
+    static_name_t const else_k = "else"_name;
+    static_name_t const for_k = "for"_name;
+    static_name_t const return_keyword_k = "return"_name;
+    static_name_t const break_keyword_k = "breakd"_name;
+    static_name_t const continue_keyword_k = "continue"_name;
 
     struct array_t_push_back_t
     {
@@ -16,41 +42,41 @@ namespace {
 
         template <typename Arg2>
         void operator()(array_t& array, Arg2 arg2) const
-            { push_back(array, arg2); }
+        { array.push_back(any_regular_t(std::move(arg2))); }
 
         template <typename Arg2, typename Arg3>
         void operator()(array_t& array, Arg2 arg2, Arg3 arg3) const
-            {
-                push_back(array, arg2);
-                push_back(array, arg3);
-            }
+        {
+            array.push_back(any_regular_t(std::move(arg2)));
+            array.push_back(any_regular_t(std::move(arg3)));
+        }
 
         template <typename Arg2, typename Arg3, typename Arg4>
         void operator()(array_t& array, Arg2 arg2, Arg3 arg3, Arg4 arg4) const
-            {
-                push_back(array, arg2);
-                push_back(array, arg3);
-                push_back(array, arg4);
-            }
+        {
+            array.push_back(any_regular_t(std::move(arg2)));
+            array.push_back(any_regular_t(std::move(arg3)));
+            array.push_back(any_regular_t(std::move(arg4)));
+        }
 
         template <typename Arg2, typename Arg3, typename Arg4, typename Arg5>
         void operator()(array_t& array, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5) const
-            {
-                push_back(array, arg2);
-                push_back(array, arg3);
-                push_back(array, arg4);
-                push_back(array, arg5);
-            }
+        {
+            array.push_back(any_regular_t(std::move(arg2)));
+            array.push_back(any_regular_t(std::move(arg3)));
+            array.push_back(any_regular_t(std::move(arg4)));
+            array.push_back(any_regular_t(std::move(arg5)));
+        }
 
         template <typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6>
         void operator()(array_t& array, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6) const
-            {
-                push_back(array, arg2);
-                push_back(array, arg3);
-                push_back(array, arg4);
-                push_back(array, arg5);
-                push_back(array, arg6);
-            }
+        {
+            array.push_back(any_regular_t(std::move(arg2)));
+            array.push_back(any_regular_t(std::move(arg3)));
+            array.push_back(any_regular_t(std::move(arg4)));
+            array.push_back(any_regular_t(std::move(arg5)));
+            array.push_back(any_regular_t(std::move(arg6)));
+        }
     };
 
     const boost::phoenix::function<array_t_push_back_t> push;
@@ -83,9 +109,9 @@ statement_parser_rules_t::statement_parser_rules_t(
     const boost::spirit::lex::token_def<name_t>& if__ = tok.keywords[if_k];
     const boost::spirit::lex::token_def<name_t>& else__ = tok.keywords[else_k];
     const boost::spirit::lex::token_def<name_t>& for__ = tok.keywords[for_k];
-    const boost::spirit::lex::token_def<name_t>& continue__ = tok.keywords[continue_k];
-    const boost::spirit::lex::token_def<name_t>& break__ = tok.keywords[break_k];
-    const boost::spirit::lex::token_def<name_t>& return__ = tok.keywords[return_k];
+    const boost::spirit::lex::token_def<name_t>& continue__ = tok.keywords[continue_keyword_k];
+    const boost::spirit::lex::token_def<name_t>& break__ = tok.keywords[break_keyword_k];
+    const boost::spirit::lex::token_def<name_t>& return__ = tok.keywords[return_keyword_k];
     assert(tok.keywords.size() == initial_size);
 
     const expression_parser_rules_t::expression_rule_t& expression = expression_parser.expression;

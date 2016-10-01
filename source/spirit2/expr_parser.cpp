@@ -5,6 +5,24 @@
 #include <boost/algorithm/string/replace.hpp>
 
 
+#ifdef ADOBE_STD_SERIALIZATION
+
+// requirements of spirit::qi::debug.
+namespace std {
+
+inline std::ostream& operator<<(std::ostream& out, const adobe::array_t& x) {
+    out << "[ ";
+    for (const auto& e : x) {
+        out << e << " ";
+    }
+    out << "]";
+    return out;
+}
+
+}
+
+#endif
+
 using namespace adobe;
 using namespace adobe::spirit2;
 
@@ -18,21 +36,21 @@ namespace {
 
         template <typename Arg2>
         void operator()(array_t& array, Arg2 arg2) const
-        { push_back(array, arg2); }
+        { array.push_back(any_regular_t(std::move(arg2))); }
 
         template <typename Arg2, typename Arg3>
         void operator()(array_t& array, Arg2 arg2, Arg3 arg3) const
         {
-            push_back(array, arg2);
-            push_back(array, arg3);
+            array.push_back(any_regular_t(std::move(arg2)));
+            array.push_back(any_regular_t(std::move(arg3)));
         }
 
         template <typename Arg2, typename Arg3, typename Arg4>
         void operator()(array_t& array, Arg2 arg2, Arg3 arg3, Arg4 arg4) const
         {
-            push_back(array, arg2);
-            push_back(array, arg3);
-            push_back(array, arg4);
+            array.push_back(any_regular_t(std::move(arg2)));
+            array.push_back(any_regular_t(std::move(arg3)));
+            array.push_back(any_regular_t(std::move(arg4)));
         }
     };
 

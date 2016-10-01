@@ -12,51 +12,14 @@ namespace adobe { namespace spirit2 {
 
 namespace {
 
-    const lexer_t& eve_lexer()
-    {
-        static const name_t s_keywords[] = {
-            interface_k,
-            constant_k,
-            layout_k,
-            logic_k,
-            relate_k,
-            unlink_k,
-            view_k,
-            when_k
-        };
-        static const std::size_t s_num_keywords = sizeof(s_keywords) / sizeof(s_keywords[0]);
-
-        static lexer_t s_lexer(s_keywords, s_keywords + s_num_keywords);
-
-        return s_lexer;    
-    }
-
-    const expression_parser_rules_t& eve_expression_parser()
-    {
-        using boost::spirit::qi::token;
-        using boost::spirit::qi::_1;
-        using boost::spirit::qi::_val;
-
-        lexer_t& tok = const_cast<lexer_t&>(eve_lexer());
-        auto const initial_size = tok.keywords.size();
-        (void)initial_size;
-        static expression_parser_rules_t::keyword_rule_t eve_keywords =
-              tok.keywords[interface_k][_val = _1]
-            | tok.keywords[constant_k][_val = _1]
-            | tok.keywords[layout_k][_val = _1]
-            | tok.keywords[logic_k][_val = _1]
-            | tok.keywords[relate_k][_val = _1]
-            | tok.keywords[unlink_k][_val = _1]
-            | tok.keywords[view_k][_val = _1]
-            | tok.keywords[when_k][_val = _1]
-            ;
-        assert(tok.keywords.size() == initial_size);
-        eve_keywords.name("keyword");
-
-        static const expression_parser_rules_t s_parser(eve_lexer(), eve_keywords);
-
-        return s_parser;
-    }
+    static_name_t const layout_k = "layout"_name;
+    static_name_t const view_k = "view"_name;
+    static_name_t const interface_k = "interface"_name;
+    static_name_t const logic_k = "logic"_name;
+    static_name_t const constant_k = "constant"_name;
+    static_name_t const unlink_k = "unlink"_name;
+    static_name_t const when_k = "when"_name;
+    static_name_t const relate_k = "relate"_name;
 
     struct add_cell_t
     {
@@ -277,6 +240,52 @@ namespace {
         adam_eve_common_parser_rules_t<eve_callback_suite_t> common_rules;
     };
 
+}
+
+const lexer_t& eve_lexer()
+{
+    static const name_t s_keywords[] = {
+        interface_k,
+        constant_k,
+        layout_k,
+        logic_k,
+        relate_k,
+        unlink_k,
+        view_k,
+        when_k
+    };
+    static const std::size_t s_num_keywords = sizeof(s_keywords) / sizeof(s_keywords[0]);
+
+    static lexer_t s_lexer(s_keywords, s_keywords + s_num_keywords);
+
+    return s_lexer;    
+}
+
+const expression_parser_rules_t& eve_expression_parser()
+{
+    using boost::spirit::qi::token;
+    using boost::spirit::qi::_1;
+    using boost::spirit::qi::_val;
+
+    lexer_t& tok = const_cast<lexer_t&>(eve_lexer());
+    auto const initial_size = tok.keywords.size();
+    (void)initial_size;
+    static expression_parser_rules_t::keyword_rule_t eve_keywords =
+        tok.keywords[interface_k][_val = _1]
+        | tok.keywords[constant_k][_val = _1]
+        | tok.keywords[layout_k][_val = _1]
+        | tok.keywords[logic_k][_val = _1]
+        | tok.keywords[relate_k][_val = _1]
+        | tok.keywords[unlink_k][_val = _1]
+        | tok.keywords[view_k][_val = _1]
+        | tok.keywords[when_k][_val = _1]
+        ;
+    assert(tok.keywords.size() == initial_size);
+    eve_keywords.name("keyword");
+
+    static const expression_parser_rules_t s_parser(eve_lexer(), eve_keywords);
+
+    return s_parser;
 }
 
 bool parse(const std::string& layout,

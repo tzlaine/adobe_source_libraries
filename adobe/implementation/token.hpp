@@ -86,23 +86,6 @@ extern static_name_t bitwise_rshift_k;
 extern static_name_t bitwise_lshift_k;
 extern static_name_t bitwise_negate_k;
 
-extern static_name_t layout_k;
-extern static_name_t view_k;
-extern static_name_t input_k;
-extern static_name_t output_k;
-extern static_name_t interface_k;
-extern static_name_t logic_k;
-extern static_name_t constant_k;
-extern static_name_t invariant_k;
-extern static_name_t external_k;
-extern static_name_t sheet_k;
-extern static_name_t unlink_k;
-extern static_name_t when_k;
-extern static_name_t relate_k;
-extern static_name_t if_k;
-extern static_name_t else_k;
-extern static_name_t for_k;
-
 extern static_name_t const_decl_k;
 extern static_name_t decl_k;
 extern static_name_t lvalue_k;

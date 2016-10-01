@@ -2,7 +2,7 @@
 #define ADOBE_SPIRIT2_EXPR_PARSER_HPP
 
 #include <adobe/spirit2/lexer.hpp>
-#include <adobe/array.hpp>
+#include <adobe/array_fwd.hpp>
 #include <adobe/dictionary.hpp>
 #include <adobe/implementation/token.hpp>
 

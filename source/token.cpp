@@ -76,23 +76,6 @@ static_name_t bitwise_rshift_k = ".bitwise_rshift"_name;
 static_name_t bitwise_lshift_k = ".bitwise_lshift"_name;
 static_name_t bitwise_negate_k = ".bitwise_negate"_name;
 
-static_name_t layout_k = "layout"_name;
-static_name_t view_k = "view"_name;
-static_name_t input_k = "input"_name;
-static_name_t output_k = "output"_name;
-static_name_t interface_k = "interface"_name;
-static_name_t logic_k = "logic"_name;
-static_name_t constant_k = "constant"_name;
-static_name_t invariant_k = "invariant"_name;
-static_name_t external_k = "external"_name;
-static_name_t sheet_k = "sheet"_name;
-static_name_t unlink_k = "unlink"_name;
-static_name_t when_k = "when"_name;
-static_name_t relate_k = "relate"_name;
-static_name_t if_k = "if"_name;
-static_name_t else_k = "else"_name;
-static_name_t for_k = "for"_name;
-
 static_name_t const_decl_k = ".const_decl"_name;
 static_name_t decl_k = ".decl"_name;
 static_name_t lvalue_k = ".lvalue"_name;

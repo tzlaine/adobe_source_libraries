@@ -35,7 +35,6 @@ output
 @output
 interface
 @interface
-logic
 @logic
 constant
 @constant
@@ -43,11 +42,8 @@ invariant
 @invariant
 sheet
 @sheet
-unlink
 @unlink
-when
 @when
-relate
 @relate
 []
 {}

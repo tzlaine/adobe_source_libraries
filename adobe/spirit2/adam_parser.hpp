@@ -8,6 +8,7 @@
 
 
 namespace adobe {
+
     struct adam_callback_suite_t;
 
     namespace spirit2 {
@@ -23,6 +24,7 @@ namespace adobe {
         array_t parse_adam_expression(const std::string& expr);
 
     }
+
 }
 
 #endif

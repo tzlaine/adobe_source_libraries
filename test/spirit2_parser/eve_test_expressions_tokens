@@ -633,9 +633,8 @@ identifier -- output
 keyword -- interface
 '@'
 keyword -- interface
-identifier -- logic
 '@'
-identifier -- logic
+keyword -- logic
 keyword -- constant
 '@'
 keyword -- constant
@@ -645,15 +644,12 @@ identifier -- invariant
 identifier -- sheet
 '@'
 identifier -- sheet
-identifier -- unlink
 '@'
-identifier -- unlink
-identifier -- when
+keyword -- unlink
 '@'
-identifier -- when
-identifier -- relate
+keyword -- when
 '@'
-identifier -- relate
+keyword -- relate
 '['
 ']'
 '{'

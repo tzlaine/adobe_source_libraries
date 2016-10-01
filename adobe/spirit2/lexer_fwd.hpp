@@ -26,6 +26,8 @@ typedef boost::spirit::lex::lexertl::position_token<
 
 typedef boost::spirit::lex::lexertl::actor_lexer<token_type_t> spirit_lexer_base_type_t;
 
+struct lexer_t;
+
 } }
 
 #endif

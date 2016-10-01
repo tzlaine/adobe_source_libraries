@@ -1,6 +1,7 @@
 // #define BOOST_SPIRIT_LEXERTL_DEBUG
 
-#include <adobe/spirit2/lexer.hpp>
+#include <adobe/spirit2/adam_parser.hpp>
+#include <adobe/spirit2/eve_parser.hpp>
 #include <adobe/implementation/token.hpp>
 
 #include <boost/spirit/home/qi/action.hpp>
@@ -29,10 +30,31 @@ char const * const g_expected_output_file = "eve_test_expressions_tokens";
 
 namespace adobe { namespace spirit2 {
 
+    static_name_t const layout_k = "layout"_name;
+    static_name_t const view_k = "view"_name;
+    static_name_t const input_k = "input"_name;
+    static_name_t const output_k = "output"_name;
+    static_name_t const interface_k = "interface"_name;
+    static_name_t const logic_k = "logic"_name;
+    static_name_t const constant_k = "constant"_name;
+    static_name_t const invariant_k = "invariant"_name;
+    static_name_t const external_k = "external"_name;
+    static_name_t const sheet_k = "sheet"_name;
+    static_name_t const unlink_k = "unlink"_name;
+    static_name_t const when_k = "when"_name;
+    static_name_t const relate_k = "relate"_name;
+    static_name_t const if_k = "if"_name;
+    static_name_t const else_k = "else"_name;
+    static_name_t const for_k = "for"_name;
+    static_name_t const return_keyword_k = "return"_name;
+    static_name_t const break_keyword_k = "breakd"_name;
+    static_name_t const continue_keyword_k = "continue"_name;
+
 #define DUMP_TOK(x) tok.x[print(boost::phoenix::ref(stream), val(#x" -- "), _1, val('\n'))]
 #define DUMP_LIT(x) lit(x)[print(boost::phoenix::ref(stream), val("'"), val(x), val("'\n"))]
 #define DUMP_UNATTRIBUTED(x) tok.x[print(boost::phoenix::ref(stream), val(#x"\n"))]
 #define DUMP_KEYWORD_TOK(x) x[print(boost::phoenix::ref(stream), val("keyword -- "), _1, val('\n'))]
+#define DUMP_CPP_KEYWORD_TOK(x) x##__[print(boost::phoenix::ref(stream), val("keyword -- "), _1, val('\n'))]
 
     struct print_t
     {
@@ -61,7 +83,7 @@ namespace adobe { namespace spirit2 {
     {
         using grammar_t = boost::spirit::qi::grammar<token_iterator_t, skipper_type_t>;
 
-        adam_lexer_test_grammar_t(lexer_t& tok, std::stringstream& stream_) :
+        adam_lexer_test_grammar_t(const lexer_t& lexer, std::stringstream& stream_) :
             grammar_t(start),
             stream(stream_)
             {
@@ -69,7 +91,9 @@ namespace adobe { namespace spirit2 {
                 using boost::spirit::qi::lit;
                 using boost::phoenix::val;
 
-                assert(tok.keywords.size() == 10u);
+                lexer_t & tok = const_cast<lexer_t &>(lexer);
+                auto const initial_size = tok.keywords.size();
+                (void)initial_size;
                 const boost::spirit::lex::token_def<name_t>& input = tok.keywords[input_k];
                 const boost::spirit::lex::token_def<name_t>& output = tok.keywords[output_k];
                 const boost::spirit::lex::token_def<name_t>& interface = tok.keywords[interface_k];
@@ -80,7 +104,13 @@ namespace adobe { namespace spirit2 {
                 const boost::spirit::lex::token_def<name_t>& unlink = tok.keywords[unlink_k];
                 const boost::spirit::lex::token_def<name_t>& when = tok.keywords[when_k];
                 const boost::spirit::lex::token_def<name_t>& relate = tok.keywords[relate_k];
-                assert(tok.keywords.size() == 10u);
+                const boost::spirit::lex::token_def<name_t>& if__ = tok.keywords[if_k];
+                const boost::spirit::lex::token_def<name_t>& else__ = tok.keywords[else_k];
+                const boost::spirit::lex::token_def<name_t>& for__ = tok.keywords[for_k];
+                const boost::spirit::lex::token_def<name_t>& continue__ = tok.keywords[continue_keyword_k];
+                const boost::spirit::lex::token_def<name_t>& break__ = tok.keywords[break_keyword_k];
+                const boost::spirit::lex::token_def<name_t>& return__ = tok.keywords[return_keyword_k];
+                assert(tok.keywords.size() == initial_size);
 
                 start =
                     +(
@@ -94,6 +124,12 @@ namespace adobe { namespace spirit2 {
                       | DUMP_KEYWORD_TOK(unlink)
                       | DUMP_KEYWORD_TOK(when)
                       | DUMP_KEYWORD_TOK(relate)
+                      | DUMP_CPP_KEYWORD_TOK(if)
+                      | DUMP_CPP_KEYWORD_TOK(else)
+                      | DUMP_CPP_KEYWORD_TOK(for)
+                      | DUMP_CPP_KEYWORD_TOK(continue)
+                      | DUMP_CPP_KEYWORD_TOK(break)
+                      | DUMP_CPP_KEYWORD_TOK(return)
                       | DUMP_TOK(identifier)
                       | DUMP_TOK(lead_comment)
                       | DUMP_TOK(trail_comment)
@@ -142,7 +178,7 @@ namespace adobe { namespace spirit2 {
     struct eve_lexer_test_grammar_t :
         boost::spirit::qi::grammar<token_iterator_t, skipper_type_t>
     {
-        eve_lexer_test_grammar_t(lexer_t& tok, std::stringstream& stream_) :
+        eve_lexer_test_grammar_t(const lexer_t& lexer, std::stringstream& stream_) :
             base_type(start),
             stream(stream_)
             {
@@ -150,19 +186,29 @@ namespace adobe { namespace spirit2 {
                 using boost::spirit::qi::lit;
                 using boost::phoenix::val;
 
-                assert(tok.keywords.size() == 4u);
+                lexer_t & tok = const_cast<lexer_t &>(lexer);
+                auto const initial_size = tok.keywords.size();
+                (void)initial_size;
                 const boost::spirit::lex::token_def<name_t>& interface = tok.keywords[interface_k];
                 const boost::spirit::lex::token_def<name_t>& constant = tok.keywords[constant_k];
                 const boost::spirit::lex::token_def<name_t>& layout = tok.keywords[layout_k];
+                const boost::spirit::lex::token_def<name_t>& logic = tok.keywords[logic_k];
+                const boost::spirit::lex::token_def<name_t>& relate = tok.keywords[relate_k];
+                const boost::spirit::lex::token_def<name_t>& unlink = tok.keywords[unlink_k];
                 const boost::spirit::lex::token_def<name_t>& view = tok.keywords[view_k];
-                assert(tok.keywords.size() == 4u);
+                const boost::spirit::lex::token_def<name_t>& when = tok.keywords[when_k];
+                assert(tok.keywords.size() == initial_size);
 
                 start =
                     +(
                         DUMP_KEYWORD_TOK(interface)
                       | DUMP_KEYWORD_TOK(constant)
                       | DUMP_KEYWORD_TOK(layout)
+                      | DUMP_KEYWORD_TOK(logic)
+                      | DUMP_KEYWORD_TOK(relate)
+                      | DUMP_KEYWORD_TOK(unlink)
                       | DUMP_KEYWORD_TOK(view)
+                      | DUMP_KEYWORD_TOK(when)
                       | DUMP_TOK(identifier)
                       | DUMP_TOK(lead_comment)
                       | DUMP_TOK(trail_comment)
@@ -215,23 +261,9 @@ namespace adobe { namespace spirit2 {
 } }
 
 #if ADAM_TEST
-BOOST_AUTO_TEST_CASE( adam_lexer )
+BOOST_AUTO_TEST_CASE( adam_lex )
 {
-    static const adobe::name_t s_keywords[] = {
-        adobe::input_k,
-        adobe::output_k,
-        adobe::interface_k,
-        adobe::logic_k,
-        adobe::constant_k,
-        adobe::invariant_k,
-        adobe::sheet_k,
-        adobe::unlink_k,
-        adobe::when_k,
-        adobe::relate_k
-    };
-    const std::size_t s_num_keywords = sizeof(s_keywords) / sizeof(s_keywords[0]);
-
-    adobe::spirit2::lexer_t lexer(s_keywords, s_keywords + s_num_keywords);
+    const adobe::spirit2::lexer_t & lexer = adobe::spirit2::adam_lexer();
     std::stringstream stream;
     adobe::spirit2::adam_lexer_test_grammar_t test_grammar(lexer, stream);
 
@@ -259,17 +291,9 @@ BOOST_AUTO_TEST_CASE( adam_lexer )
 #endif
 
 #if !ADAM_TEST
-BOOST_AUTO_TEST_CASE( eve_lexer )
+BOOST_AUTO_TEST_CASE( eve_lex )
 {
-    static const adobe::name_t s_keywords[] = {
-        adobe::interface_k,
-        adobe::constant_k,
-        adobe::layout_k,
-        adobe::view_k
-    };
-    const std::size_t s_num_keywords = sizeof(s_keywords) / sizeof(s_keywords[0]);
-
-    adobe::spirit2::lexer_t lexer(s_keywords, s_keywords + s_num_keywords);
+    const adobe::spirit2::lexer_t & lexer = adobe::spirit2::eve_lexer();
     std::stringstream stream;
     adobe::spirit2::eve_lexer_test_grammar_t test_grammar(lexer, stream);
 

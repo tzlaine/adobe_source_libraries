@@ -1,4 +1,6 @@
 #include <adobe/spirit2/expr_parser.hpp>
+#include <adobe/spirit2/adam_parser.hpp>
+#include <adobe/spirit2/eve_parser.hpp>
 
 #include <adobe/adam_parser.hpp>
 #include <adobe/algorithm/lower_bound.hpp>
@@ -23,6 +25,11 @@ char const * const g_input_file = "test_expressions";
 
 
 namespace adobe {
+
+    static_name_t const layout_k = "layout"_name;
+    static_name_t const view_k = "view"_name;
+    static_name_t const interface_k = "interface"_name;
+    static_name_t const constant_k = "constant"_name;
 
     bool eve_keyword_lookup(const name_t& name)
     {
@@ -120,55 +127,8 @@ namespace adobe { namespace spirit2 {
 #if ADAM_TEST
 BOOST_AUTO_TEST_CASE( adam_expression_parser )
 {
-    static const adobe::name_t s_keywords[] = {
-        adobe::input_k,
-        adobe::output_k,
-        adobe::interface_k,
-        adobe::logic_k,
-        adobe::constant_k,
-        adobe::invariant_k,
-        adobe::sheet_k,
-        adobe::unlink_k,
-        adobe::when_k,
-        adobe::relate_k
-    };
-    const std::size_t s_num_keywords = sizeof(s_keywords) / sizeof(s_keywords[0]);
-
-    adobe::spirit2::lexer_t tok(s_keywords, s_keywords + s_num_keywords);
-
-    using boost::spirit::qi::token;
-    using boost::spirit::qi::_1;
-    using boost::spirit::qi::_val;
-
-    assert(tok.keywords.size() == 10u);
-    const boost::spirit::lex::token_def<adobe::name_t>& input = tok.keywords[adobe::input_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& output = tok.keywords[adobe::output_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& interface = tok.keywords[adobe::interface_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& logic = tok.keywords[adobe::logic_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& constant = tok.keywords[adobe::constant_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& invariant = tok.keywords[adobe::invariant_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& sheet = tok.keywords[adobe::sheet_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& unlink = tok.keywords[adobe::unlink_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& when = tok.keywords[adobe::when_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& relate = tok.keywords[adobe::relate_k];
-    assert(tok.keywords.size() == 10u);
-
-    static adobe::spirit2::expression_parser_rules_t::keyword_rule_t adam_keywords =
-        input[_val = _1]
-        | output[_val = _1]
-        | interface[_val = _1]
-        | logic[_val = _1]
-        | constant[_val = _1]
-        | invariant[_val = _1]
-        | sheet[_val = _1]
-        | unlink[_val = _1]
-        | when[_val = _1]
-        | relate[_val = _1]
-        ;
-    adam_keywords.name("keyword");
-
     adobe::array_t stack;
-    adobe::spirit2::expression_parser_rules_t parser_rules(tok, adam_keywords);
+    auto const & parser_rules = adobe::spirit2::adam_expression_parser();
 
     std::string expressions_file_contents = read_file(g_input_file);
     std::vector<std::string> expressions;
@@ -180,8 +140,13 @@ BOOST_AUTO_TEST_CASE( adam_expression_parser )
     std::size_t failures = 0;
     for (std::size_t i = 0; i < expressions.size(); ++i) {
         if (!expressions[i].empty()) {
-            bool success =
-                test_expression(tok, parser_rules, stack, &adobe::parse_adam_expression, expressions[i]);
+            bool success = test_expression(
+                adobe::spirit2::adam_lexer(),
+                parser_rules,
+                stack,
+                &adobe::parse_adam_expression,
+                expressions[i]
+            );
             BOOST_CHECK(success);
             if (success)
                 ++passes;
@@ -197,37 +162,8 @@ BOOST_AUTO_TEST_CASE( adam_expression_parser )
 #if !ADAM_TEST
 BOOST_AUTO_TEST_CASE( eve_expression_parser )
 {
-    static const adobe::name_t s_keywords[] = {
-        adobe::interface_k,
-        adobe::constant_k,
-        adobe::layout_k,
-        adobe::view_k
-    };
-    const std::size_t s_num_keywords = sizeof(s_keywords) / sizeof(s_keywords[0]);
-
-    adobe::spirit2::lexer_t tok(s_keywords, s_keywords + s_num_keywords);
-
-    using boost::spirit::qi::token;
-    using boost::spirit::qi::_1;
-    using boost::spirit::qi::_val;
-
-    assert(tok.keywords.size() == 4u);
-    const boost::spirit::lex::token_def<adobe::name_t>& interface = tok.keywords[adobe::interface_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& constant = tok.keywords[adobe::constant_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& layout = tok.keywords[adobe::layout_k];
-    const boost::spirit::lex::token_def<adobe::name_t>& view = tok.keywords[adobe::view_k];
-    assert(tok.keywords.size() == 4u);
-
-    static adobe::spirit2::expression_parser_rules_t::keyword_rule_t eve_keywords =
-        interface[_val = _1]
-        | constant[_val = _1]
-        | layout[_val = _1]
-        | view[_val = _1]
-        ;
-    eve_keywords.name("keyword");
-
     adobe::array_t stack;
-    adobe::spirit2::expression_parser_rules_t parser_rules(tok, eve_keywords);
+    auto const & parser_rules = adobe::spirit2::eve_expression_parser();
 
     std::string expressions_file_contents = read_file(g_input_file);
     std::vector<std::string> expressions;
@@ -239,8 +175,13 @@ BOOST_AUTO_TEST_CASE( eve_expression_parser )
     std::size_t failures = 0;
     for (std::size_t i = 0; i < expressions.size(); ++i) {
         if (!expressions[i].empty()) {
-            bool success =
-                test_expression(tok, parser_rules, stack, &adobe::parse_eve_expression, expressions[i]);
+            bool success = test_expression(
+                adobe::spirit2::eve_lexer(),
+                parser_rules,
+                stack,
+                &adobe::parse_eve_expression,
+                expressions[i]
+            );
             BOOST_CHECK(success);
             if (success)
                 ++passes;
