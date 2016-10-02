@@ -31,8 +31,18 @@ struct test_t
         expected_result_m(expected_result),
         expect_exception_m(expect_exception)
         {}
+    test_t(const char* expression,
+           const any_regular_t& expected_result,
+           const any_regular_t& alternate_expected_result,
+           bool expect_exception) :
+        expression_m(expression),
+        expected_result_m(expected_result),
+        alternate_expected_result_m(alternate_expected_result),
+        expect_exception_m(expect_exception)
+        {}
     std::string expression_m;
     any_regular_t expected_result_m;
+    any_regular_t alternate_expected_result_m;
     bool expect_exception_m;
 };
 
@@ -83,8 +93,18 @@ const std::vector<test_t>& tests()
             result.push_back(any_regular_t(1));
             result.push_back(any_regular_t(0));
             result.push_back(any_regular_t(1));
+
             retval.push_back(test_t("scoped_decl_simple_for_test_2_fn()", any_regular_t(result)));
-            retval.push_back(test_t("scoped_decl_simple_for_test_3_fn()", any_regular_t(result)));
+
+            {
+                array_t alternate_result;
+                alternate_result.push_back(any_regular_t(1));
+                alternate_result.push_back(any_regular_t(0));
+                alternate_result.push_back(any_regular_t(1));
+                alternate_result.push_back(any_regular_t(0));
+                retval.push_back(test_t("scoped_decl_simple_for_test_3_fn()", any_regular_t(result), any_regular_t(alternate_result), false));
+            }
+
             retval.push_back(test_t("scoped_decl_complex_for_test_1_fn()", any_regular_t(result)));
         }
 
@@ -417,11 +437,13 @@ void run_test(test_t const & test, adam_function_map_t & functions)
 
     auto sheet_result = sheet.inspect(parse_adam_expression(std::string("result")));
     auto const result = sheet_result.cast<dictionary_t>()["value"_name];
-    BOOST_CHECK(result == test.expected_result_m);
+    BOOST_CHECK(result == test.expected_result_m || result == test.alternate_expected_result_m);
 
-    if (result != test.expected_result_m) {
-        std::cout << "result(=" << result
-                  << ") != test.expected_result_m(=" << test.expected_result_m << ")\n";
+    if (result != test.expected_result_m && result != test.alternate_expected_result_m) {
+        std::cout << "result(=" << result.cast<dictionary_t>()
+                  << ") is not test.expected_result_m(=" << test.expected_result_m.cast<dictionary_t>()
+                  << ") or test.alternate_expected_result_m(=" << test.alternate_expected_result_m.cast<array_t>()
+                  <<  ")\n";
     }
 }
 

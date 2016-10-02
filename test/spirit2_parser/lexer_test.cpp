@@ -47,7 +47,7 @@ namespace adobe { namespace spirit2 {
     static_name_t const else_k = "else"_name;
     static_name_t const for_k = "for"_name;
     static_name_t const return_keyword_k = "return"_name;
-    static_name_t const break_keyword_k = "breakd"_name;
+    static_name_t const break_keyword_k = "break"_name;
     static_name_t const continue_keyword_k = "continue"_name;
 
 #define DUMP_TOK(x) tok.x[print(boost::phoenix::ref(stream), val(#x" -- "), _1, val('\n'))]

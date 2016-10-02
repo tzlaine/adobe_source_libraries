@@ -229,12 +229,9 @@ namespace {
                     statement[1].cast<array_t>(),
                     op == const_decl_k);
         } else if (op == stmt_ifelse_k) {
-            const array_t& condition_expr =
-               statement[0].cast<array_t>();
-            const bool condition =
-                local_scope.inspect(condition_expr).cast<bool>();
-            const array_t& stmt_block =
-                (condition ? statement[1] : statement[2]).cast<array_t>();
+            const array_t& condition_expr = statement[0].cast<array_t>();
+            const bool condition = local_scope.inspect(condition_expr).cast<bool>();
+            const array_t& stmt_block = (condition ? statement[1] : statement[2]).cast<array_t>();
             scoped_stack_frame_t local_stack_frame(stack);
             any_regular_t value = exec_block(stmt_block.begin(),
                                              stmt_block.end(),
@@ -253,8 +250,7 @@ namespace {
             name_t loop_var_1 = statement[1].cast<name_t>();
             if (loop_var_1)
                 declare(loop_var_1, array_t(), false);
-            const any_regular_t sequence =
-                local_scope.inspect(statement[2].cast<array_t>());
+            const any_regular_t sequence = local_scope.inspect(statement[2].cast<array_t>());
             const array_t& stmt_block = statement[3].cast<array_t>();
             if (sequence.type_info() == boost::typeindex::type_id<array_t>()) {
                 if (loop_var_1)
@@ -282,8 +278,7 @@ namespace {
                         return value;
                 }
             } else if (sequence.type_info() == boost::typeindex::type_id<dictionary_t>()) {
-                const dictionary_t& dictionary =
-                    sequence.cast<dictionary_t>();
+                const dictionary_t& dictionary = sequence.cast<dictionary_t>();
                 for (dictionary_t::const_iterator
                          it = dictionary.begin(), end_it = dictionary.end();
                      it != end_it;
@@ -320,13 +315,11 @@ namespace {
             const array_t& vars_array = statement[0].cast<array_t>();
             for (std::size_t i = 0; i < vars_array.size(); i += 3) {
                 name_t var_name = vars_array[i + 0].cast<name_t>();
-                const array_t& initializer =
-                    vars_array[i + 1].cast<array_t>();
+                const array_t& initializer = vars_array[i + 1].cast<array_t>();
                 declare(var_name, initializer, false);
             }
             const array_t& condition = statement[1].cast<array_t>();
-            const array_t& assignments_array =
-                statement[2].cast<array_t>();
+            const array_t& assignments_array = statement[2].cast<array_t>();
             const array_t& stmt_block = statement[3].cast<array_t>();
             const any_regular_t assign_token(assign_k);
             any_regular_t condition_result = local_scope.inspect(condition);
@@ -350,11 +343,9 @@ namespace {
                         return value;
                 }
                 array_t::const_iterator it = assignments_array.begin();
-                const array_t::const_iterator end_it =
-                    assignments_array.end();
+                const array_t::const_iterator end_it = assignments_array.end();
                 while (it != end_it) {
-                    array_t::const_iterator assign_it =
-                        std::find(it, end_it, assign_token);
+                    auto assign_it = std::find(it, end_it, assign_token);
                     ++assign_it;
                     exec_statement(array_t(it, assign_it),
                                    local_scope,
@@ -463,9 +454,7 @@ adam_function_t::adam_function_t(name_t name,
                 }
             }
         }
-        for (array_t::const_iterator
-                 it = m_statements[i].begin(),
-                 end_it = m_statements[i].end();
+        for (auto it = m_statements[i].begin(), end_it = m_statements[i].end();
              it != end_it;
              ++it) {
             if (it->type_info() == boost::typeindex::type_id<name_t>()) {
@@ -552,8 +541,7 @@ any_regular_t adam_function_t::operator()(
                 local_scope);
 
     for (std::size_t i = 0; i < m_parameter_names.size(); ++i) {
-        dictionary_t::const_iterator it =
-            parameters.find(m_parameter_names[i]);
+        dictionary_t::const_iterator it = parameters.find(m_parameter_names[i]);
         if (it != parameters.end()) {
             local_scope.add_interface(m_parameter_names[i],
                                       false,

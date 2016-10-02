@@ -31,7 +31,7 @@ namespace {
     static_name_t const else_k = "else"_name;
     static_name_t const for_k = "for"_name;
     static_name_t const return_keyword_k = "return"_name;
-    static_name_t const break_keyword_k = "breakd"_name;
+    static_name_t const break_keyword_k = "break"_name;
     static_name_t const continue_keyword_k = "continue"_name;
 
     struct array_t_push_back_t
@@ -42,7 +42,9 @@ namespace {
 
         template <typename Arg2>
         void operator()(array_t& array, Arg2 arg2) const
-        { array.push_back(any_regular_t(std::move(arg2))); }
+        {
+            array.push_back(any_regular_t(std::move(arg2)));
+        }
 
         template <typename Arg2, typename Arg3>
         void operator()(array_t& array, Arg2 arg2, Arg3 arg3) const
