@@ -1,4 +1,4 @@
-#include <adobe/spirit2/functions.hpp>
+#include <adobe/spirit2/builtin_functions.hpp>
 
 #include <adobe/array.hpp>
 #include <adobe/dictionary.hpp>

@@ -1,6 +1,6 @@
 #include <adobe/spirit2/func_parser.hpp>
 #include <adobe/spirit2/adam_parser.hpp>
-#include <adobe/spirit2/functions.hpp>
+#include <adobe/spirit2/builtin_functions.hpp>
 #include <adobe/adam.hpp>
 #include <adobe/adam_evaluate.hpp>
 
