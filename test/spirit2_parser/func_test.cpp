@@ -441,8 +441,8 @@ void run_test(test_t const & test, adam_function_map_t & functions)
 
     if (result != test.expected_result_m && result != test.alternate_expected_result_m) {
         std::cout << "result(=" << result.cast<dictionary_t>()
-                  << ") is not test.expected_result_m(=" << test.expected_result_m.cast<dictionary_t>()
-                  << ") or test.alternate_expected_result_m(=" << test.alternate_expected_result_m.cast<array_t>()
+                  << ") is not test.expected_result_m(=" << test.expected_result_m.type_info().name()//cast<dictionary_t>()
+                  << ") or test.alternate_expected_result_m(=" << test.alternate_expected_result_m.type_info().name()//cast<array_t>()
                   <<  ")\n";
     }
 }

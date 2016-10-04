@@ -158,6 +158,7 @@ any_regular_t erase(array_t const & parameters)
     }
 }
 
+#if 0 // TODO eval() is currently broken.
 any_regular_t parse_(array_t const & parameters)
 {
     if (parameters.size() != 1u)
@@ -168,9 +169,27 @@ any_regular_t parse_(array_t const & parameters)
     try {
         return any_regular_t(parse_adam_expression(string));
     } catch (...) {
-        return any_regular_t();
+        return any_regular_t(array_t());
     }
 }
+
+any_regular_t eval(sheet_t& sheet, array_t const & arguments)
+{
+    any_regular_t retval;
+
+    if (arguments.size() != 1u)
+        throw std::runtime_error("eval() takes exactly 1 argument; " + boost::lexical_cast<std::string>(arguments.size()) + " given.");
+
+    if (arguments[0].type_info() != boost::typeindex::type_id<array_t>())
+        throw std::runtime_error("The argument to eval() must be an array, such as is returned by parse().");
+
+    try {
+        retval = sheet.inspect(arguments[0].cast<array_t>());
+    } catch (...) {}
+
+    return retval;
+}
+#endif
 
 any_regular_t size(array_t const & parameters)
 {
@@ -289,13 +308,12 @@ any_regular_t transform(
 ) {
     any_regular_t retval;
 
-#if 1
     if (arguments.size() != 2u)
-        throw std::runtime_error("for_each() takes exactly 2 arguments; " + boost::lexical_cast<std::string>(arguments.size()) + " given.");
+        throw std::runtime_error("transform() takes exactly 2 arguments; " + boost::lexical_cast<std::string>(arguments.size()) + " given.");
 
     name_t f;
     if (!arguments[1].cast(f))
-        throw std::runtime_error("The second argument to for_each() must be the name of a function.");
+        throw std::runtime_error("The second argument to transform() must be the name of a function.");
 
     dictionary_t f_arguments;
 
@@ -339,7 +357,6 @@ any_regular_t transform(
         else
             retval = dictionary_lookup(f, f_arguments);
     }
-#endif
 
     return retval;
 }
@@ -467,23 +484,6 @@ any_regular_t foldr(
     return retval;
 }
 
-any_regular_t eval(sheet_t& sheet, array_t const & arguments)
-{
-    any_regular_t retval;
-
-    if (arguments.size() != 1u)
-        throw std::runtime_error("eval() takes exactly 1 argument; " + boost::lexical_cast<std::string>(arguments.size()) + " given.");
-
-    if (arguments[0].type_info() != boost::typeindex::type_id<array_t>())
-        throw std::runtime_error("The argument to eval() must be an array, such as is returned by parse().");
-
-    try {
-        retval = sheet.inspect(arguments[0].cast<array_t>());
-    } catch (...) {}
-
-    return retval;
-}
-
 
 void add_predefined_functions(
     array_function_map_t & array_function_map,
@@ -496,7 +496,9 @@ void add_predefined_functions(
     array_function_map["prepend"_name] = &prepend;
     array_function_map["insert"_name] = &insert;
     array_function_map["erase"_name] = &erase;
+#if 0 // TODO eval() is currently broken.
     array_function_map["parse"_name] = &parse_;
+#endif
     array_function_map["size"_name] = &size;
     array_function_map["join"_name] = &join;
     array_function_map["split"_name] = &split;
@@ -515,9 +517,11 @@ void add_predefined_functions(
         return foldr(array_lookup, dictionary_lookup, adam_lookup, arguments);
     };
 
+#if 0 // TODO eval() is currently broken.
     array_function_map["eval"_name] = [&](array_t const & arguments) {
         return eval(sheet, arguments);
     };
+#endif
 }
 
 } }

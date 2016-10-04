@@ -12,7 +12,10 @@ any_regular_t append(array_t const & parameters);
 any_regular_t prepend(array_t const & parameters);
 any_regular_t insert(array_t const & parameters);
 any_regular_t erase(array_t const & parameters);
+#if 0 // eval() is currently broken.
 any_regular_t parse_(array_t const & parameters);
+any_regular_t eval(sheet_t& sheet, array_t const & arguments);
+#endif
 any_regular_t size(array_t const & parameters);
 any_regular_t join(array_t const & parameters);
 any_regular_t split(array_t const & parameters);
@@ -44,7 +47,6 @@ any_regular_t foldr(
     virtual_machine_t::adam_function_lookup_t const & adam_lookup,
     array_t const & arguments
 );
-any_regular_t eval(sheet_t& sheet, array_t const & arguments);
 
 /** Adds all the other functions in this header to \a array_function_map;
     bakes in references to the other parameters. */

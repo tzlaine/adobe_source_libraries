@@ -338,6 +338,7 @@ array_t parse_adam_expression(const std::string& expr)
 {
     array_t retval;
     using boost::spirit::qi::phrase_parse;
+    using boost::spirit::qi::eps;
     text_iterator_t it(expr.begin());
     detail::s_text_it = &it;
     detail::s_begin = it;
@@ -348,7 +349,7 @@ array_t parse_adam_expression(const std::string& expr)
     const expression_parser_rules_t& expression_parser = adam_expression_parser();
     phrase_parse(iter,
                  end,
-                 expression_parser.expression(boost::phoenix::ref(retval)),
+                 eps > expression_parser.expression(boost::phoenix::ref(retval)),
                  boost::spirit::qi::in_state("WS")[adam_lexer().self]);
     return retval;
 }
