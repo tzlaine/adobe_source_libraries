@@ -442,8 +442,8 @@ void run_test(test_t const & test, adam_function_map_t & functions)
     BOOST_CHECK(result == test.expected_result_m);
 
     if (result != test.expected_result_m) {
-        std::cout << "result(=" << result
-                  << ") is not test.expected_result_m(=" << test.expected_result_m
+        std::cout << "result(=" << result.type_info()
+                  << ") is not test.expected_result_m(=" << test.expected_result_m.type_info()
                   <<  ")\n";
     }
 }

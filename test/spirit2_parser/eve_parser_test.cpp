@@ -53,8 +53,8 @@ struct store_add_view_params_t
         } else {
             push_back(m_array, parse_location.stream_name());
             push_back(m_array, parse_location.line_number_m);
-            push_back(m_array, std::size_t(parse_location.line_start_m));
-            push_back(m_array, std::size_t(parse_location.position_m));
+            push_back(m_array, int(parse_location.line_start_m));
+            push_back(m_array, int(parse_location.position_m));
         }
         push_back(m_array, name);
         push_back(m_array, parameters);
@@ -105,8 +105,8 @@ struct store_add_cell_params_t
         } else {
             push_back(m_array, position.stream_name());
             push_back(m_array, position.line_number_m);
-            push_back(m_array, std::size_t(position.line_start_m));
-            push_back(m_array, std::size_t(position.position_m));
+            push_back(m_array, int(position.line_start_m));
+            push_back(m_array, int(position.position_m));
         }
         push_back(m_array, initializer);
         push_back(m_array, brief);
@@ -145,8 +145,8 @@ struct store_add_relation_params_t
         } else {
             push_back(m_array, position.stream_name());
             push_back(m_array, position.line_number_m);
-            push_back(m_array, std::size_t(position.line_start_m));
-            push_back(m_array, std::size_t(position.position_m));
+            push_back(m_array, int(position.line_start_m));
+            push_back(m_array, int(position.position_m));
         }
         push_back(m_array, conditional);
         while (first != last) {
@@ -167,8 +167,8 @@ struct store_add_relation_params_t
             } else {
                 push_back(m_array, first->position_m.stream_name());
                 push_back(m_array, first->position_m.line_number_m);
-                push_back(m_array, std::size_t(first->position_m.line_start_m));
-                push_back(m_array, std::size_t(first->position_m.position_m));
+                push_back(m_array, int(first->position_m.line_start_m));
+                push_back(m_array, int(first->position_m.position_m));
             }
             push_back(m_array, first->expression_m);
             push_back(m_array, first->detailed_m);
@@ -215,8 +215,8 @@ struct store_add_interface_params_t
         } else {
             push_back(m_array, position1.stream_name());
             push_back(m_array, position1.line_number_m);
-            push_back(m_array, std::size_t(position1.line_start_m));
-            push_back(m_array, std::size_t(position1.position_m));
+            push_back(m_array, int(position1.line_start_m));
+            push_back(m_array, int(position1.position_m));
         }
         push_back(m_array, initializer);
         if (instrument_positions) {
@@ -233,8 +233,8 @@ struct store_add_interface_params_t
         } else {
             push_back(m_array, position2.stream_name());
             push_back(m_array, position2.line_number_m);
-            push_back(m_array, std::size_t(position2.line_start_m));
-            push_back(m_array, std::size_t(position2.position_m));
+            push_back(m_array, int(position2.line_start_m));
+            push_back(m_array, int(position2.position_m));
         }
         push_back(m_array, expression);
         push_back(m_array, brief);

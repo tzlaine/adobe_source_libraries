@@ -97,7 +97,7 @@ any_regular_t insert(array_t const & parameters)
         if (parameters.size() < 2u)
             throw std::runtime_error("insert(array_t, i, ...) requires at least 2 parameters");
         array_t array = parameters[0].cast<array_t>();
-        std::size_t index;
+        int index;
         if (!parameters[1].cast(index))
             throw std::runtime_error("insert(array_t, i, ...) requires a number as its second parameter");
         else if (array.size() < index)
@@ -135,7 +135,7 @@ any_regular_t erase(array_t const & parameters)
         if (parameters.size() < 2u)
             throw std::runtime_error("erase(array_t, i) requires at least 2 parameters");
         array_t array = parameters[0].cast<array_t>();
-        std::size_t index;
+        int index;
         if (!parameters[1].cast(index))
             throw std::runtime_error("erase(array_t, i) requires a number as its second parameter");
         else if (array.size() <= index)
@@ -196,9 +196,9 @@ any_regular_t size(array_t const & parameters)
     if (parameters.size() != 1u)
         throw std::runtime_error("size() requires 1 parameter");
     if (parameters[0].type_info() == boost::typeindex::type_id<array_t>())
-        return any_regular_t(parameters[0].cast<array_t>().size());
+        return any_regular_t(double(parameters[0].cast<array_t>().size()));
     else if (parameters[0].type_info() == boost::typeindex::type_id<dictionary_t>())
-        return any_regular_t(parameters[0].cast<dictionary_t>().size());
+        return any_regular_t(double(parameters[0].cast<dictionary_t>().size()));
     else
         throw std::runtime_error("size() requires an array or dictionary as its first parameter");
 }
