@@ -218,9 +218,6 @@ namespace {
         statement.back().cast(op);
 
         if (op == assign_k) {
-            // TODO: Look up the "variable" in the function lookups; assign it
-            // to the lhs as a std::function; promote the intrinsic functions
-            // from virtual_machine.cpp into the lookups to support this.
             any_regular_t value =
                 local_scope.inspect(array_t(statement.begin() + 1, statement.end() - 1));
             lvalue_t l_value =
@@ -426,19 +423,22 @@ adam_function_t::adam_function_t()
 adam_function_t::adam_function_t(name_t name,
                                  const std::vector<name_t>& parameter_names,
                                  const std::vector<array_t>& statements) :
-    m_function_name(name),
-    m_parameter_names(parameter_names),
-    m_statements(statements)
+    function_name_m(name),
+    parameter_names_m(parameter_names),
+    statements_m(statements),
+    use_std_functions_m(false)
 {
-    boost::container::flat_set<name_t> declared_vars(m_parameter_names.begin(),
-                                                     m_parameter_names.end());
-    for (std::size_t i = 0; i < m_statements.size(); ++i) {
+    assert(name);
+
+    boost::container::flat_set<name_t> declared_vars(parameter_names_m.begin(),
+                                                     parameter_names_m.end());
+    for (std::size_t i = 0; i < statements_m.size(); ++i) {
         name_t op_name;
-        m_statements[i][m_statements[i].size() - 1].cast(op_name);
+        statements_m[i][statements_m[i].size() - 1].cast(op_name);
         if (op_name == decl_k || op_name == const_decl_k) {
-            declared_vars.insert(m_statements[i][0].cast<name_t>());
+            declared_vars.insert(statements_m[i][0].cast<name_t>());
         } else if (op_name == assign_k) {
-            const array_t lvalue = m_statements[i][0].cast<array_t>();
+            const array_t lvalue = statements_m[i][0].cast<array_t>();
             for (std::size_t j = 0; j < lvalue.size(); ++j) {
                 name_t op;
                 if (lvalue[j].cast(op) && op == variable_k) {
@@ -447,7 +447,7 @@ adam_function_t::adam_function_t(name_t name,
                     if (declared_vars.find(var) == declared_vars.end()) {
                         throw_parser_exception(
                             make_string(
-                                m_function_name.c_str(),
+                                function_name_m.c_str(),
                                 "(): Assignment to unknown variable ",
                                 var.c_str()
                             ).c_str(),
@@ -457,7 +457,7 @@ adam_function_t::adam_function_t(name_t name,
                 }
             }
         }
-        for (auto it = m_statements[i].begin(), end_it = m_statements[i].end();
+        for (auto it = statements_m[i].begin(), end_it = statements_m[i].end();
              it != end_it;
              ++it) {
             if (it->type_info() == boost::typeindex::type_id<name_t>()) {
@@ -468,7 +468,7 @@ adam_function_t::adam_function_t(name_t name,
                     if (declared_vars.find(var) == declared_vars.end()) {
                         throw_parser_exception(
                             make_string(
-                                m_function_name.c_str(),
+                                function_name_m.c_str(),
                                 "(): Use of unknown variable ",
                                 var.c_str()
                             ).c_str(),
@@ -481,17 +481,29 @@ adam_function_t::adam_function_t(name_t name,
     }
 }
 
+adam_function_t::adam_function_t(name_t name,
+                                 dictionary_function_t const & dictionary_function,
+                                 array_function_t const & array_function) :
+    function_name_m(name),
+    dictionary_function_m(dictionary_function),
+    array_function_m(array_function),
+    use_std_functions_m(true)
+{
+    assert(name);
+    assert(dictionary_function || array_function);
+}
+
 adam_function_t::operator bool() const
-{ return !m_function_name.empty(); }
+{ return !function_name_m.empty(); }
 
 name_t adam_function_t::name() const
-{ return m_function_name; }
+{ return function_name_m; }
 
 const std::vector<name_t>& adam_function_t::parameter_names() const
-{ return m_parameter_names; }
+{ return parameter_names_m; }
 
 const std::vector<array_t>& adam_function_t::statements() const
-{ return m_statements; }
+{ return statements_m; }
 
 any_regular_t adam_function_t::operator()(
     const array_function_lookup_t& array_function_lookup,
@@ -500,6 +512,15 @@ any_regular_t adam_function_t::operator()(
     const array_t& parameters
 ) const
 {
+    if (use_std_functions_m) {
+        if (!array_function_m) {
+            throw std::logic_error(
+                make_string("Function \'", function_name_m.c_str(), "\' not defined as an array-function.")
+            );
+        }
+        return array_function_m(parameters);
+    }
+
     sheet_t local_scope;
     std::vector<stack_frame_t> stack;
 
@@ -509,16 +530,16 @@ any_regular_t adam_function_t::operator()(
                 variable_getter_t(local_scope, stack),
                 local_scope);
 
-    for (std::size_t i = 0; i < m_parameter_names.size(); ++i) {
+    for (std::size_t i = 0; i < parameter_names_m.size(); ++i) {
         if (i < parameters.size()) {
-            local_scope.add_interface(m_parameter_names[i],
+            local_scope.add_interface(parameter_names_m[i],
                                       false,
                                       line_position_t(),
                                       array_t(1, parameters[i]),
                                       line_position_t(),
                                       array_t());
         } else {
-            local_scope.add_interface(m_parameter_names[i],
+            local_scope.add_interface(parameter_names_m[i],
                                       false,
                                       line_position_t(),
                                       array_t(),
@@ -527,7 +548,7 @@ any_regular_t adam_function_t::operator()(
         }
     }
 
-    return common_impl(local_scope, stack, m_statements);
+    return common_impl(local_scope, stack, statements_m);
 }
 
 any_regular_t adam_function_t::operator()(
@@ -537,6 +558,15 @@ any_regular_t adam_function_t::operator()(
     const dictionary_t& parameters
 ) const
 {
+    if (use_std_functions_m) {
+        if (!dictionary_function_m) {
+            throw std::logic_error(
+                make_string("Function \'", function_name_m.c_str(), "\' not defined as a dictionary-function.")
+            );
+        }
+        return dictionary_function_m(parameters);
+    }
+
     sheet_t local_scope;
     std::vector<stack_frame_t> stack;
 
@@ -546,17 +576,17 @@ any_regular_t adam_function_t::operator()(
                 variable_getter_t(local_scope, stack),
                 local_scope);
 
-    for (std::size_t i = 0; i < m_parameter_names.size(); ++i) {
-        dictionary_t::const_iterator it = parameters.find(m_parameter_names[i]);
+    for (std::size_t i = 0; i < parameter_names_m.size(); ++i) {
+        dictionary_t::const_iterator it = parameters.find(parameter_names_m[i]);
         if (it != parameters.end()) {
-            local_scope.add_interface(m_parameter_names[i],
+            local_scope.add_interface(parameter_names_m[i],
                                       false,
                                       line_position_t(),
                                       array_t(1, it->second),
                                       line_position_t(),
                                       array_t());
         } else {
-            local_scope.add_interface(m_parameter_names[i],
+            local_scope.add_interface(parameter_names_m[i],
                                       false,
                                       line_position_t(),
                                       array_t(),
@@ -565,7 +595,7 @@ any_regular_t adam_function_t::operator()(
         }
     }
 
-    return common_impl(local_scope, stack, m_statements);
+    return common_impl(local_scope, stack, statements_m);
 }
 
 }

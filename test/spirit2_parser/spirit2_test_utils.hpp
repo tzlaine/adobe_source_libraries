@@ -32,6 +32,19 @@ std::ostream& operator<<(std::ostream& stream, const type_info_t& x)
 void verbose_dump(const adobe::array_t& array, std::size_t indent = 0);
 void verbose_dump(const adobe::dictionary_t& array, std::size_t indent = 0);
 
+void verbose_dump(const adobe::any_regular_t& any, std::size_t indent = 0)
+{
+    if (any.type_info() == boost::typeindex::type_id<adobe::array_t>().type_info()) {
+        verbose_dump(any.cast<adobe::array_t>(), indent);
+    } else if (any.type_info() == boost::typeindex::type_id<adobe::dictionary_t>().type_info()) {
+        verbose_dump(any.cast<adobe::dictionary_t>(), indent);
+    } else {
+        std::cout << std::string(4 * indent, ' ')
+                  << "type: " << any.type_info() << " "
+                  << "value: " << any << "\n";
+    }
+}
+
 void verbose_dump(const adobe::array_t& array, std::size_t indent)
 {
     if (array.empty()) {
@@ -43,15 +56,7 @@ void verbose_dump(const adobe::array_t& array, std::size_t indent)
     ++indent;
     for (adobe::array_t::const_iterator it = array.begin(); it != array.end(); ++it) {
         const adobe::any_regular_t& any = *it;
-        if (any.type_info() == boost::typeindex::type_id<adobe::array_t>().type_info()) {
-            verbose_dump(any.cast<adobe::array_t>(), indent);
-        } else if (any.type_info() == boost::typeindex::type_id<adobe::dictionary_t>().type_info()) {
-            verbose_dump(any.cast<adobe::dictionary_t>(), indent);
-        } else {
-            std::cout << std::string(4 * indent, ' ')
-                      << "type: " << any.type_info() << " "
-                      << "value: " << any << "\n";
-        }
+        verbose_dump(any, indent);
     }
     --indent;
     std::cout << std::string(4 * indent, ' ') << "]\n";

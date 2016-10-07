@@ -112,12 +112,12 @@ const std::vector<test_t>& tests()
         retval.push_back(test_t("scoped_decl_simple_for_test_5_fn()", any_regular_t(3)));
         retval.push_back(test_t("scoped_decl_complex_for_test_2_fn()", any_regular_t(3)));
 
-        retval.push_back(test_t("slow_size([])", any_regular_t(0)));
-        retval.push_back(test_t("slow_size([0])", any_regular_t(1)));
-        retval.push_back(test_t("slow_size([0, @two])", any_regular_t(2)));
-        retval.push_back(test_t("slow_size({})", any_regular_t(0)));
-        retval.push_back(test_t("slow_size({one: 0})", any_regular_t(1)));
-        retval.push_back(test_t("slow_size({one: 0, two: @two})", any_regular_t(2)));
+        retval.push_back(test_t("slow_size([], slow_size_impl)", any_regular_t(0)));
+        retval.push_back(test_t("slow_size([0], slow_size_impl)", any_regular_t(1)));
+        retval.push_back(test_t("slow_size([0, @two], slow_size_impl)", any_regular_t(2)));
+        retval.push_back(test_t("slow_size({}, slow_size_impl)", any_regular_t(0)));
+        retval.push_back(test_t("slow_size({one: 0}, slow_size_impl)", any_regular_t(1)));
+        retval.push_back(test_t("slow_size({one: 0, two: @two}, slow_size_impl)", any_regular_t(2)));
 
         retval.push_back(test_t("simple_for_1({})", any_regular_t(true)));
         retval.push_back(test_t("simple_for_1({one: 0})", any_regular_t(true)));
@@ -404,17 +404,17 @@ void run_test(test_t const & test, adam_function_map_t & functions)
     spirit2::array_function_map_t array_function_map;
 
     virtual_machine_t::array_function_lookup_t array_lookup =
-        [&](name_t name, array_t const & arguments) {
+        [&](name_t name) {
             auto const it = array_function_map.find(name);
             if (it == array_function_map.end())
                 throw std::runtime_error(make_string("AFunction ", name.c_str(), " not found."));
             else
-                return it->second(arguments);
+                return it->second;
         };
     sheet.machine_m.set_array_function_lookup(array_lookup);
 
     virtual_machine_t::dictionary_function_lookup_t dictionary_lookup =
-        [&](name_t name, dictionary_t const &) -> any_regular_t {
+        [&](name_t name) -> virtual_machine_t::dictionary_function_t {
             throw std::runtime_error(make_string("DFunction ", name.c_str(), " not found."));
         };
     sheet.machine_m.set_dictionary_function_lookup(dictionary_lookup);
@@ -443,10 +443,13 @@ void run_test(test_t const & test, adam_function_map_t & functions)
     BOOST_CHECK(result == test.expected_result_m || result == test.alternate_expected_result_m);
 
     if (result != test.expected_result_m && result != test.alternate_expected_result_m) {
-        std::cout << "result(=" << result.cast<dictionary_t>()
-                  << ") is not test.expected_result_m(=" << test.expected_result_m.type_info().name()//cast<dictionary_t>()
-                  << ") or test.alternate_expected_result_m(=" << test.alternate_expected_result_m.type_info().name()//cast<array_t>()
-                  <<  ")\n";
+        std::cout << "result(\n";
+        verbose_dump(result);
+        std::cout << ") is not test.expected_result_m(\n";
+        verbose_dump(test.expected_result_m);
+        std::cout << ") nor test.alternate_expected_result_m(\n";
+        verbose_dump(test.alternate_expected_result_m);
+        std::cout << ")\n";
     }
 }
 

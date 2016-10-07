@@ -9,43 +9,53 @@ namespace adobe {
 class adam_function_t
 {
 public:
+    typedef virtual_machine_t::dictionary_function_t dictionary_function_t;
+    typedef virtual_machine_t::array_function_t array_function_t;
     typedef virtual_machine_t::dictionary_function_lookup_t dictionary_function_lookup_t;
     typedef virtual_machine_t::array_function_lookup_t array_function_lookup_t;
     typedef virtual_machine_t::adam_function_lookup_t adam_function_lookup_t;
 
     adam_function_t();
     adam_function_t(name_t name,
-                    const std::vector<name_t>& parameter_names,
-                    const std::vector<array_t>& statements);
+                    std::vector<name_t> const & parameter_names,
+                    std::vector<array_t> const & statements);
+    adam_function_t(name_t name,
+                    dictionary_function_t const & dictionary_function,
+                    array_function_t const & array_function);
 
     explicit operator bool() const;
 
     name_t name() const;
-    const std::vector<name_t>& parameter_names() const;
-    const std::vector<array_t>& statements() const;
+    std::vector<name_t> const & parameter_names() const;
+    std::vector<array_t> const & statements() const;
 
-    any_regular_t operator()(const array_function_lookup_t& array_function_lookup,
-                             const dictionary_function_lookup_t& dictionary_function_lookup,
-                             const adam_function_lookup_t& adam_function_lookup,
-                             const array_t& parameters) const;
-    any_regular_t operator()(const array_function_lookup_t& array_function_lookup,
-                             const dictionary_function_lookup_t& dictionary_function_lookup,
-                             const adam_function_lookup_t& adam_function_lookup,
-                             const dictionary_t& parameters) const;
+    any_regular_t operator()(array_function_lookup_t const & array_function_lookup,
+                             dictionary_function_lookup_t const & dictionary_function_lookup,
+                             adam_function_lookup_t const & adam_function_lookup,
+                             array_t const & parameters) const;
+    any_regular_t operator()(array_function_lookup_t const & array_function_lookup,
+                             dictionary_function_lookup_t const & dictionary_function_lookup,
+                             adam_function_lookup_t const & adam_function_lookup,
+                             dictionary_t const & parameters) const;
+
+    inline friend bool operator==(adam_function_t const & lhs, adam_function_t const & rhs)
+    {
+        return
+            lhs.name() == rhs.name() &&
+            lhs.parameter_names() == rhs.parameter_names() &&
+            lhs.statements() == rhs.statements() &&
+            !lhs.dictionary_function_m == !rhs.dictionary_function_m &&
+            !lhs.array_function_m == !rhs.array_function_m;
+    }
 
 private:
-    name_t m_function_name;
-    std::vector<name_t> m_parameter_names;
-    std::vector<array_t> m_statements;
+    name_t function_name_m;
+    std::vector<name_t> parameter_names_m;
+    std::vector<array_t> statements_m;
+    dictionary_function_t dictionary_function_m;
+    array_function_t array_function_m;
+    bool use_std_functions_m;
 };
-
-inline bool operator==(adam_function_t const & lhs, adam_function_t const & rhs)
-{
-    return
-        lhs.name() == rhs.name() &&
-        lhs.parameter_names() == rhs.parameter_names() &&
-        lhs.statements() == rhs.statements();
-}
 
 inline bool operator!=(adam_function_t const & lhs, adam_function_t const & rhs)
 { return !(lhs == rhs); }

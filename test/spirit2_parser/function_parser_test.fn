@@ -354,8 +354,8 @@ slow_size_impl(state, value) {
     return state + 1;
 }
 
-slow_size(seq) {
-    return fold(seq, 0, @slow_size_impl);
+slow_size(seq, impl) {
+    return fold(seq, 0, impl);
 }
 
 simple_for_1(seq) {

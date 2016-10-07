@@ -83,17 +83,15 @@ namespace {
 using namespace adobe::literals;
 
 typedef void (adobe::virtual_machine_t::implementation_t::*operator_t)();
-typedef boost::function<adobe::any_regular_t(const adobe::array_t&)> array_function_t;
-typedef boost::function<adobe::any_regular_t(const adobe::dictionary_t&)> dictionary_function_t;
 
 typedef vector<adobe::any_regular_t> stack_type; // REVISIT (sparent) : GCC 3.1 the symbol stack_t
 // conflicts with a symbol in signal.h
 
 #if !defined(ADOBE_NO_DOCUMENTATION)
 typedef adobe::static_table<adobe::name_t, operator_t, 27> operator_table_t;
-typedef adobe::static_table<adobe::name_t, array_function_t, 7> array_function_table_t;
-typedef adobe::static_table<adobe::name_t, dictionary_function_t, 1> dictionary_function_table_t;
-typedef adobe::static_table<const boost::typeindex::type_info*, adobe::name_t, 7> type_table_t;
+typedef adobe::static_table<adobe::name_t, adobe::virtual_machine_t::array_function_t, 7> array_function_table_t;
+typedef adobe::static_table<adobe::name_t, adobe::virtual_machine_t::dictionary_function_t, 1> dictionary_function_table_t;
+typedef adobe::static_table<const boost::typeindex::type_info*, adobe::name_t, 8> type_table_t;
 #endif // !defined(ADOBE_NO_DOCUMENTATION)
 
 /*************************************************************************************************/
@@ -127,7 +125,8 @@ void get_type_name_init_() {
          type_table_t::entry_type(&boost::typeindex::type_id<string>().type_info(), "string"_name),
          type_table_t::entry_type(&boost::typeindex::type_id<adobe::array_t>().type_info(), "array"_name),
          type_table_t::entry_type(&boost::typeindex::type_id<adobe::dictionary_t>().type_info(), "dictionary"_name),
-         type_table_t::entry_type(&boost::typeindex::type_id<adobe::name_t>().type_info(), "name"_name)}};
+         type_table_t::entry_type(&boost::typeindex::type_id<adobe::name_t>().type_info(), "name"_name),
+         type_table_t::entry_type(&boost::typeindex::type_id<adobe::adam_function_t>().type_info(), "function"_name)}};
 
     type_table_s.sort();
 
@@ -688,7 +687,39 @@ void virtual_machine_t::implementation_t::variable_operator() {
     if (!variable_lookup_m)
         throw std::logic_error("No variable lookup installed.");
 
-    value_stack_m.push_back(variable_lookup_m(variable));
+    try {
+        value_stack_m.push_back(variable_lookup_m(variable));
+    } catch (...) {
+        adam_function_t adam_function;
+        if (const auto looked_up_adam_function = adam_function_lookup_m ?
+            adam_function_lookup_m(variable) : boost::optional<const adam_function_t&>()) {
+            adam_function = *looked_up_adam_function;
+        }
+
+        if (!adam_function) {
+            array_function_t array_func;
+            try {
+                if (!(*array_function_table_g)(variable, array_func))
+                    array_func = array_function_lookup_m(variable);
+            } catch (...) {}
+
+            dictionary_function_t dictionary_func;
+            try {
+                if (!(*dictionary_function_table_g)(variable, dictionary_func))
+                    dictionary_func = dictionary_function_lookup_m(variable);
+            } catch (...) {}
+
+            if (array_func || dictionary_func) {
+                adam_function = adam_function_t(variable, dictionary_func, array_func);
+            }
+        }
+
+        if (adam_function) {
+            value_stack_m.push_back(any_regular_t(adam_function));
+        } else {
+            throw;
+        }
+    }
 }
 
 /*************************************************************************************************/
@@ -819,13 +850,8 @@ void virtual_machine_t::implementation_t::function_operator() {
     if (!adam_function && variable_lookup_m) {
         try {
             any_regular_t var(variable_lookup_m(function_name));
-
-            if (var.type_info() == boost::typeindex::type_id<adam_function_t>()) {
+            if (var.type_info() == boost::typeindex::type_id<adam_function_t>())
                 adam_function = var.cast<adam_function_t>();
-            } else {
-                // TODO: Try std::function<any_regular_t(dictionary_t const &)> too.
-                // TODO: Try std::function<any_regular_t(array_t const &)> too.
-            }
         } catch (std::exception const &) {
             // If it wasn't a variable, no problem.
         }
@@ -838,17 +864,18 @@ void virtual_machine_t::implementation_t::function_operator() {
 
         // handle function lookup as necessary
 
-        if ((*array_function_table_g)(function_name, array_func)) {
-            value_stack_m.back() = array_func(arguments);
-        } else if (adam_function) {
+        if (adam_function) {
             value_stack_m.back() = adam_function(
                 array_function_lookup_m,
                 dictionary_function_lookup_m,
                 adam_function_lookup_m,
                 arguments
             );
-        } else if (array_function_lookup_m) {
-            value_stack_m.back() = array_function_lookup_m(function_name, arguments);
+        } else if ((*array_function_table_g)(function_name, array_func)) {
+            value_stack_m.back() = array_func(arguments);
+        } else if (array_function_lookup_m &&
+                   (array_func = array_function_lookup_m(function_name))) {
+            value_stack_m.back() = array_func(arguments);
         } else {
             throw_function_not_defined(function_name);
         }
@@ -857,17 +884,18 @@ void virtual_machine_t::implementation_t::function_operator() {
         dictionary_function_t dictionary_func;
         adobe::dictionary_t arguments(back().cast<adobe::dictionary_t>());
 
-        if ((*dictionary_function_table_g)(function_name, dictionary_func)) {
-            value_stack_m.back() = dictionary_func(arguments);
-        } else if (adam_function) {
+        if (adam_function) {
             value_stack_m.back() = adam_function(
                 array_function_lookup_m,
                 dictionary_function_lookup_m,
                 adam_function_lookup_m,
                 arguments
             );
-        } else if (dictionary_function_lookup_m) {
-            value_stack_m.back() = dictionary_function_lookup_m(function_name, arguments);
+        } else if ((*dictionary_function_table_g)(function_name, dictionary_func)) {
+            value_stack_m.back() = dictionary_func(arguments);
+        } else if (dictionary_function_lookup_m &&
+                   (dictionary_func = dictionary_function_lookup_m(function_name))) {
+            value_stack_m.back() = dictionary_func(arguments);
         } else {
             throw_function_not_defined(function_name);
         }

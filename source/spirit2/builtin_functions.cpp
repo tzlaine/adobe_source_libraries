@@ -100,7 +100,7 @@ any_regular_t insert(array_t const & parameters)
         int index;
         if (!parameters[1].cast(index))
             throw std::runtime_error("insert(array_t, i, ...) requires a number as its second parameter");
-        else if (array.size() < index)
+        else if (index < 0 || static_cast<int>(array.size()) < index)
             throw std::runtime_error("index i passed to insert(array_t, i, ...) is out of bounds");
         array.insert(array.begin() + index,
                      boost::next(parameters.begin(), 2),
@@ -138,7 +138,7 @@ any_regular_t erase(array_t const & parameters)
         int index;
         if (!parameters[1].cast(index))
             throw std::runtime_error("erase(array_t, i) requires a number as its second parameter");
-        else if (array.size() <= index)
+        else if (index < 0 || static_cast<int>(array.size()) <= index)
             throw std::runtime_error("index i passed to erase(array_t, i) is out of bounds");
         array.erase(array.begin() + index);
         return any_regular_t(array);
@@ -178,7 +178,7 @@ any_regular_t eval(sheet_t& sheet, array_t const & arguments)
     any_regular_t retval;
 
     if (arguments.size() != 1u)
-        throw std::runtime_error("eval() takes exactly 1 argument; " + boost::lexical_cast<std::string>(arguments.size()) + " given.");
+        throw std::runtime_error("eval() takes exactly 1 argument; " + std::to_string(arguments.size()) + " given.");
 
     if (arguments[0].type_info() != boost::typeindex::type_id<array_t>())
         throw std::runtime_error("The argument to eval() must be an array, such as is returned by parse().");
@@ -309,11 +309,12 @@ any_regular_t transform(
     any_regular_t retval;
 
     if (arguments.size() != 2u)
-        throw std::runtime_error("transform() takes exactly 2 arguments; " + boost::lexical_cast<std::string>(arguments.size()) + " given.");
+        throw std::runtime_error("transform() takes exactly 2 arguments; " + std::to_string(arguments.size()) + " given.");
 
-    name_t f;
-    if (!arguments[1].cast(f))
-        throw std::runtime_error("The second argument to transform() must be the name of a function.");
+    if (arguments[1].type_info() != boost::typeindex::type_id<adam_function_t>())
+        throw std::runtime_error("The third argument to transform() must be a function.");
+
+    adam_function_t const & f = arguments[1].cast<adam_function_t>();
 
     dictionary_t f_arguments;
 
@@ -326,11 +327,8 @@ any_regular_t transform(
              ++it) {
             f_arguments[key_k] = any_regular_t(it->first);
             f_arguments[value_k] = it->second;
-            auto const adam_function = adam_lookup(f);
-            if (adam_function)
-                result_elements[it->first] = (*adam_function)(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
-            else
-                result_elements[it->first] = dictionary_lookup(f, f_arguments);
+            any_regular_t result = f(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
+            result_elements[it->first] = result;
         }
     } else if (arguments[0].type_info() == boost::typeindex::type_id<array_t>()) {
         array_t const & sequence = arguments[0].cast<array_t>();
@@ -341,21 +339,12 @@ any_regular_t transform(
              it != end_it;
              ++it) {
             f_arguments[value_k] = *it;
-            any_regular_t result;
-            auto const adam_function = adam_lookup(f);
-            if (adam_function)
-                result = (*adam_function)(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
-            else
-                result = dictionary_lookup(f, f_arguments);
+            any_regular_t result = f(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
             result_elements.push_back(result);
         }
     } else {
         f_arguments[value_k] = arguments[0];
-        auto const adam_function = adam_lookup(f);
-        if (adam_function)
-            retval = (*adam_function)(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
-        else
-            retval = dictionary_lookup(f, f_arguments);
+        retval = f(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
     }
 
     return retval;
@@ -368,7 +357,7 @@ void fold_dictionary_impl(
     virtual_machine_t::array_function_lookup_t const & array_lookup,
     virtual_machine_t::dictionary_function_lookup_t const & dictionary_lookup,
     virtual_machine_t::adam_function_lookup_t const & adam_lookup,
-    name_t f,
+    adam_function_t const & f,
     Iter it,
     Iter end_it,
     any_regular_t& retval
@@ -378,11 +367,7 @@ void fold_dictionary_impl(
         f_arguments[state_k] = retval;
         f_arguments[key_k] = any_regular_t(it->first);
         f_arguments[value_k] = it->second;
-        auto const adam_function = adam_lookup(f);
-        if (adam_function)
-            retval = (*adam_function)(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
-        else
-            retval = dictionary_lookup(f, f_arguments);
+        retval = f(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
     }
 }
 
@@ -391,7 +376,7 @@ void fold_array_impl(
     virtual_machine_t::array_function_lookup_t const & array_lookup,
     virtual_machine_t::dictionary_function_lookup_t const & dictionary_lookup,
     virtual_machine_t::adam_function_lookup_t const & adam_lookup,
-    name_t f,
+    adam_function_t const & f,
     Iter it,
     Iter end_it,
     any_regular_t& retval
@@ -400,11 +385,7 @@ void fold_array_impl(
     for (; it != end_it; ++it) {
         f_arguments[state_k] = retval;
         f_arguments[value_k] = *it;
-        auto const adam_function = adam_lookup(f);
-        if (adam_function)
-            retval = (*adam_function)(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
-        else
-            retval = dictionary_lookup(f, f_arguments);
+        retval = f(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
     }
 }
 
@@ -419,11 +400,12 @@ any_regular_t fold(
     any_regular_t retval;
 
     if (arguments.size() != 3u)
-        throw std::runtime_error("fold() takes exactly 3 arguments; " + boost::lexical_cast<std::string>(arguments.size()) + " given.");
+        throw std::runtime_error("fold() takes exactly 3 arguments; " + std::to_string(arguments.size()) + " given.");
 
-    name_t f;
-    if (!arguments[2].cast(f))
-        throw std::runtime_error("The third argument to fold() must be the name of a function.");
+    if (arguments[2].type_info() != boost::typeindex::type_id<adam_function_t>())
+        throw std::runtime_error("The third argument to fold() must be a function.");
+
+    adam_function_t const & f = arguments[2].cast<adam_function_t>();
 
     retval = arguments[1];
 
@@ -437,11 +419,7 @@ any_regular_t fold(
         dictionary_t f_arguments;
         f_arguments[state_k] = retval;
         f_arguments[value_k] = arguments[0];
-        auto const adam_function = adam_lookup(f);
-        if (adam_function)
-            retval = (*adam_function)(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
-        else
-            retval = dictionary_lookup(f, f_arguments);
+        retval = f(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
     }
 
     return retval;
@@ -456,11 +434,12 @@ any_regular_t foldr(
     any_regular_t retval;
 
     if (arguments.size() != 3u)
-        throw std::runtime_error("foldr() takes exactly 3 arguments; " + boost::lexical_cast<std::string>(arguments.size()) + " given.");
+        throw std::runtime_error("foldr() takes exactly 3 arguments; " + std::to_string(arguments.size()) + " given.");
 
-    name_t f;
-    if (!arguments[2].cast(f))
-        throw std::runtime_error("The third argument to foldr() must be the name of a function.");
+    if (arguments[2].type_info() != boost::typeindex::type_id<adam_function_t>())
+        throw std::runtime_error("The third argument to foldr() must be a function.");
+
+    adam_function_t const & f = arguments[2].cast<adam_function_t>();
 
     retval = arguments[1];
 
@@ -474,11 +453,7 @@ any_regular_t foldr(
         dictionary_t f_arguments;
         f_arguments[state_k] = retval;
         f_arguments[value_k] = arguments[0];
-        auto const adam_function = adam_lookup(f);
-        if (adam_function)
-            retval = (*adam_function)(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
-        else
-            retval = dictionary_lookup(f, f_arguments);
+        retval = f(array_lookup, dictionary_lookup, adam_lookup, f_arguments);
     }
 
     return retval;

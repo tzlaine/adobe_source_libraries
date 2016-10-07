@@ -1,0 +1,37 @@
+sheet function {
+input:
+    func;
+
+interface:
+    func_type : typeof(func);
+    use_func : false <== func_type == @function ? true : false;
+    func_result : empty <== use_func ? func(func) : "none yet";
+
+output:
+    result <== { func_result: func_result };
+};
+
+check (function, {
+    func_result: "none yet",
+    func_type: @empty,
+    use_func: false,
+    result: {
+        func_result: "none yet"
+    }
+});
+
+reinitialize (function, {
+    func : typeof
+});
+
+print(function, "after reinitialization" );
+dump(function);
+
+check (function, {
+    func_result: @function,
+    func_type: @function,
+    use_func: true,
+    result: {
+        func_result: @function
+    }
+});

@@ -37,9 +37,12 @@ class virtual_machine_t {
 public:
     typedef array_t expression_t;
 
+    typedef boost::function<adobe::any_regular_t(const adobe::array_t&)> array_function_t;
+    typedef boost::function<adobe::any_regular_t(const adobe::dictionary_t&)> dictionary_function_t;
+
     typedef any_regular_t(variable_lookup_signature_t)(name_t);
-    typedef any_regular_t(dictionary_function_lookup_signature_t)(name_t, const dictionary_t&);
-    typedef any_regular_t(array_function_lookup_signature_t)(name_t, const array_t&);
+    typedef dictionary_function_t(dictionary_function_lookup_signature_t)(name_t);
+    typedef array_function_t(array_function_lookup_signature_t)(name_t);
     typedef any_regular_t(named_index_lookup_signature_t)(const any_regular_t&, name_t index);
     typedef any_regular_t(numeric_index_lookup_signature_t)(const any_regular_t&,
                                                             std::size_t index);

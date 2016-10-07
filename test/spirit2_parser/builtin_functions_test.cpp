@@ -61,8 +61,18 @@ struct test_t
         expected_result_m(expected_result),
         expect_exception_m(expect_exception)
         {}
+    test_t(const char* expression,
+           const any_regular_t& expected_result,
+           const any_regular_t& alternate_expected_result,
+           bool expect_exception) :
+        expression_m(expression),
+        expected_result_m(expected_result),
+        alternate_expected_result_m(alternate_expected_result),
+        expect_exception_m(expect_exception)
+        {}
     std::string expression_m;
     any_regular_t expected_result_m;
+    any_regular_t alternate_expected_result_m;
     bool expect_exception_m;
 };
 
@@ -74,54 +84,58 @@ const std::vector<test_t>& tests()
             dictionary_t result;
             result["one"_name] = any_regular_t(2.0);
             result["two"_name] = any_regular_t(3.0);
-            retval.push_back(test_t("transform({one: 1, two: 2}, @increment)", any_regular_t(result)));
+            retval.push_back(test_t("transform({one: 1, two: 2}, increment)", any_regular_t(result)));
         }
         {
             array_t result;
             result.push_back(any_regular_t(4.0));
             result.push_back(any_regular_t(5.0));
-            retval.push_back(test_t("transform([3, 4], @increment)", any_regular_t(result)));
+            retval.push_back(test_t("transform([3, 4], increment)", any_regular_t(result)));
         }
-        retval.push_back(test_t("transform(5, @increment)", any_regular_t(6.0)));
+        retval.push_back(test_t("transform(5, increment)", any_regular_t(6.0)));
 
         {
-            array_t result;
-            result.push_back(any_regular_t("one"_name));
-            result.push_back(any_regular_t("two"_name));
-            result.push_back(any_regular_t("three"_name));
-            retval.push_back(test_t("fold({one: 1, two: 2, three: 3}, [], @push_back_key)", any_regular_t(result)));
+            array_t result_a;
+            result_a.push_back(any_regular_t("one"_name));
+            result_a.push_back(any_regular_t("two"_name));
+            array_t result_b;
+            result_b.push_back(any_regular_t("one"_name));
+            result_b.push_back(any_regular_t("two"_name));
+            retval.push_back(test_t("fold({one: 1, two: 2}, [], push_back_key)", any_regular_t(result_a), any_regular_t(result_b), false));
         }
         {
             array_t result;
             result.push_back(any_regular_t(4.0));
             result.push_back(any_regular_t(5.0));
             result.push_back(any_regular_t(6.0));
-            retval.push_back(test_t("fold([4, 5, 6], [], @push_back)", any_regular_t(result)));
+            retval.push_back(test_t("fold([4, 5, 6], [], push_back)", any_regular_t(result)));
         }
         {
             array_t result;
             result.push_back(any_regular_t(7.0));
-            retval.push_back(test_t("fold(7, [], @push_back)", any_regular_t(result)));
+            retval.push_back(test_t("fold(7, [], push_back)", any_regular_t(result)));
         }
 
         {
-            array_t result;
-            result.push_back(any_regular_t(3.0));
-            result.push_back(any_regular_t(2.0));
-            result.push_back(any_regular_t(1.0));
-            retval.push_back(test_t("foldr({one: 1, two: 2, three: 3}, [], @push_back)", any_regular_t(result)));
+            array_t result_a;
+            result_a.push_back(any_regular_t(2.0));
+            result_a.push_back(any_regular_t(1.0));
+            array_t result_b;
+            result_b.push_back(any_regular_t(1.0));
+            result_b.push_back(any_regular_t(2.0));
+            retval.push_back(test_t("foldr({one: 1, two: 2}, [], push_back)", any_regular_t(result_a), any_regular_t(result_b), false));
         }
         {
             array_t result;
             result.push_back(any_regular_t(6.0));
             result.push_back(any_regular_t(5.0));
             result.push_back(any_regular_t(4.0));
-            retval.push_back(test_t("foldr([4, 5, 6], [], @push_back)", any_regular_t(result)));
+            retval.push_back(test_t("foldr([4, 5, 6], [], push_back)", any_regular_t(result)));
         }
         {
             array_t result;
             result.push_back(any_regular_t(7.0));
-            retval.push_back(test_t("foldr(7, [], @push_back)", any_regular_t(result)));
+            retval.push_back(test_t("foldr(7, [], push_back)", any_regular_t(result)));
         }
 
         retval.push_back(test_t("append()", any_regular_t(), true));
@@ -395,12 +409,12 @@ void run_test(test_t const & test, adam_function_map_t & functions)
     spirit2::array_function_map_t array_function_map;
 
     virtual_machine_t::array_function_lookup_t array_lookup =
-        [&](name_t name, array_t const & arguments) {
+        [&](name_t name) {
             auto const it = array_function_map.find(name);
             if (it == array_function_map.end())
                 throw std::runtime_error(make_string("AFunction ", name.c_str(), " not found."));
             else
-                return it->second(arguments);
+                return it->second;
         };
     sheet.machine_m.set_array_function_lookup(array_lookup);
 
@@ -409,12 +423,12 @@ void run_test(test_t const & test, adam_function_map_t & functions)
     dictionary_function_map["push_back"_name] = &::push_back;
     dictionary_function_map["push_back_key"_name] = &::push_back_key;
     virtual_machine_t::dictionary_function_lookup_t dictionary_lookup =
-        [&](name_t name, dictionary_t const & arguments) -> any_regular_t {
+        [&](name_t name) {
             auto const it = dictionary_function_map.find(name);
             if (it == dictionary_function_map.end())
                 throw std::runtime_error(make_string("DFunction ", name.c_str(), " not found."));
             else
-                return it->second(arguments);
+                return it->second;
         };
     sheet.machine_m.set_dictionary_function_lookup(dictionary_lookup);
 
@@ -439,12 +453,16 @@ void run_test(test_t const & test, adam_function_map_t & functions)
 
     auto sheet_result = sheet.inspect(parse_adam_expression(std::string("result")));
     auto const result = sheet_result.cast<dictionary_t>()["value"_name];
-    BOOST_CHECK(result == test.expected_result_m);
+    BOOST_CHECK(result == test.expected_result_m || result == test.alternate_expected_result_m);
 
-    if (result != test.expected_result_m) {
-        std::cout << "result(=" << result.type_info()
-                  << ") is not test.expected_result_m(=" << test.expected_result_m.type_info()
-                  <<  ")\n";
+    if (result != test.expected_result_m && result != test.alternate_expected_result_m) {
+        std::cout << "result(\n";
+        verbose_dump(result);
+        std::cout << ") is not test.expected_result_m(\n";
+        verbose_dump(test.expected_result_m);
+        std::cout << ") nor test.alternate_expected_result_m(\n";
+        verbose_dump(test.alternate_expected_result_m);
+        std::cout << ")\n";
     }
 }
 
