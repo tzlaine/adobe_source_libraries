@@ -501,7 +501,6 @@ virtual_machine_t::implementation_t::implementation_t() { virtual_machine_init()
 /*************************************************************************************************/
 
 void virtual_machine_t::implementation_t::evaluate(const array_t& expression) {
-    std::cout << "expression=" << expression << "\n";
     for (expression_t::const_iterator iter(expression.begin()); iter != expression.end(); ++iter) {
         adobe::name_t op_name;
 
