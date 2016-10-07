@@ -218,6 +218,9 @@ namespace {
         statement.back().cast(op);
 
         if (op == assign_k) {
+            // TODO: Look up the "variable" in the function lookups; assign it
+            // to the lhs as a std::function; promote the intrinsic functions
+            // from virtual_machine.cpp into the lookups to support this.
             any_regular_t value =
                 local_scope.inspect(array_t(statement.begin() + 1, statement.end() - 1));
             lvalue_t l_value =
@@ -477,6 +480,9 @@ adam_function_t::adam_function_t(name_t name,
         }
     }
 }
+
+adam_function_t::operator bool() const
+{ return !m_function_name.empty(); }
 
 name_t adam_function_t::name() const
 { return m_function_name; }

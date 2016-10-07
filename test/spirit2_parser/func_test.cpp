@@ -355,6 +355,9 @@ const std::vector<test_t>& tests()
             retval.push_back(test_t("lvalue_assignment_test_8({foo: [0, 0]})", any_regular_t(result)));
             retval.push_back(test_t("lvalue_assignment_test_9({foo: [0, 0]})", any_regular_t(result)));
         }
+
+        retval.push_back(test_t("lambda_test_1()", any_regular_t(7)));
+        retval.push_back(test_t("lambda_test_2()", any_regular_t("yay!")));
     }
     return retval;
 }

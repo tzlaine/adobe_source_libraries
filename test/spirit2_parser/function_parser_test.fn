@@ -607,3 +607,17 @@ lvalue_assignment_test_9(seq) {
     seq[@foo][1] = 'bar';
     return seq;
 }
+
+lambda_test_1() {
+    l : \ (a, b) {
+        return a + b;
+    };
+    return l(3, 4);
+}
+
+lambda_test_2() {
+    l : \ () {
+        return 'yay!';
+    };
+    return l();
+}

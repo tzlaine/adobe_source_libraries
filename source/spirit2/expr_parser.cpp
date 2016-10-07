@@ -75,7 +75,8 @@ namespace {
 }
 
 expression_parser_rules_t::expression_parser_rules_t(const lexer_t& tok, const keyword_rule_t& keyword_) :
-    keyword(keyword_)
+    keyword(keyword_),
+    function_parser(*this)
 {
     namespace ascii = boost::spirit::ascii;
     namespace phoenix = boost::phoenix;
@@ -306,6 +307,10 @@ expression_parser_rules_t::expression_parser_rules_t(const lexer_t& tok, const k
               )
               [
                   push(_r1, _a, function_k)
+              ]
+        |     function_parser.lambda
+              [
+                  push(_r1, _1)
               ]
         |     tok.identifier
               [

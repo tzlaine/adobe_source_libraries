@@ -124,6 +124,7 @@ lexer_t::lexer_t(const adobe::name_t* first_keyword,
         |     '}'
         |     '@'
         |     ';'
+        |     '\\'
         ;
 
     self("WS") = lex::token_def<>("\\s+");

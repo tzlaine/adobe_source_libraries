@@ -18,6 +18,8 @@ public:
                     const std::vector<name_t>& parameter_names,
                     const std::vector<array_t>& statements);
 
+    explicit operator bool() const;
+
     name_t name() const;
     const std::vector<name_t>& parameter_names() const;
     const std::vector<array_t>& statements() const;
@@ -36,6 +38,17 @@ private:
     std::vector<name_t> m_parameter_names;
     std::vector<array_t> m_statements;
 };
+
+inline bool operator==(adam_function_t const & lhs, adam_function_t const & rhs)
+{
+    return
+        lhs.name() == rhs.name() &&
+        lhs.parameter_names() == rhs.parameter_names() &&
+        lhs.statements() == rhs.statements();
+}
+
+inline bool operator!=(adam_function_t const & lhs, adam_function_t const & rhs)
+{ return !(lhs == rhs); }
 
 /** The map of functions used to evaluate user-defined Adam functions in Adam
     and Eve expressions. */

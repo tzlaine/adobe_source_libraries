@@ -807,26 +807,42 @@ void virtual_machine_t::implementation_t::bitwise_unary_operator() {
 void virtual_machine_t::implementation_t::function_operator() {
     virtual_machine_init();
 
-    // pop the function name
-    adobe::name_t function_name(back().cast<adobe::name_t>());
+    adobe::name_t function_name = back().cast<adobe::name_t>();
+
     pop_back();
 
-    const auto adam_function =
-        adam_function_lookup_m ?
-        adam_function_lookup_m(function_name) :
-        boost::optional<const adam_function_t&>();
+    adam_function_t adam_function;
+    if (const auto looked_up_adam_function = adam_function_lookup_m ?
+        adam_function_lookup_m(function_name) : boost::optional<const adam_function_t&>()) {
+        adam_function = *looked_up_adam_function;
+    }
+
+    if (!adam_function && variable_lookup_m) {
+        try {
+            any_regular_t var(variable_lookup_m(function_name));
+
+            if (var.type_info() == boost::typeindex::type_id<adam_function_t>()) {
+                adam_function = var.cast<adam_function_t>();
+            } else {
+                // TODO: Try std::function<any_regular_t(dictionary_t const &)> too.
+                // TODO: Try std::function<any_regular_t(array_t const &)> too.
+            }
+        } catch (std::exception const &) {
+            // If it wasn't a variable, no problem.
+        }
+    }
 
     if (back().type_info() == boost::typeindex::type_id<adobe::array_t>()) {
         // handle unnamed parameter functions
         array_function_t array_func;
         adobe::array_t arguments(back().cast<adobe::array_t>());
 
-        // handle function lookup
+        // handle function lookup as necessary
 
         if ((*array_function_table_g)(function_name, array_func)) {
             value_stack_m.back() = array_func(arguments);
         } else if (adam_function) {
-            value_stack_m.back() = (*adam_function)(
+            value_stack_m.back() = adam_function(
                 array_function_lookup_m,
                 dictionary_function_lookup_m,
                 adam_function_lookup_m,
@@ -845,7 +861,7 @@ void virtual_machine_t::implementation_t::function_operator() {
         if ((*dictionary_function_table_g)(function_name, dictionary_func)) {
             value_stack_m.back() = dictionary_func(arguments);
         } else if (adam_function) {
-            value_stack_m.back() = (*adam_function)(
+            value_stack_m.back() = adam_function(
                 array_function_lookup_m,
                 dictionary_function_lookup_m,
                 adam_function_lookup_m,

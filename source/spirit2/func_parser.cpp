@@ -8,6 +8,22 @@ namespace adobe { namespace spirit2 {
 
 namespace {
 
+    struct make_function_t
+    {
+        template <typename ...T>
+        struct result
+        { typedef void type; };
+
+        adam_function_t operator()(
+            name_t arg1,
+            const std::vector<name_t>& arg2,
+            const std::vector<array_t>& arg3
+        ) const
+        { return adam_function_t(arg1, arg2, arg3); }
+    };
+
+    const boost::phoenix::function<make_function_t> make_function;
+
     struct add_function_t
     {
         template <typename ...T>
@@ -15,12 +31,11 @@ namespace {
         { typedef void type; };
 
         void operator()(
-            adam_function_map_t& arg1,
+            adam_function_map_t & arg1,
             name_t arg2,
-            const std::vector<name_t>& arg3,
-            const std::vector<array_t>& arg4
+            adam_function_t const & arg3
         ) const
-        { arg1[arg2] = adam_function_t(arg2, arg3, arg4); }
+        { arg1[arg2] = arg3; }
     };
 
     const boost::phoenix::function<add_function_t> add_function;
@@ -28,13 +43,13 @@ namespace {
 }
 
 function_parser_rules_t::function_parser_rules_t(
-    const lexer_t& tok,
     const expression_parser_rules_t& expression_parser
 ) :
-    statement_parser(tok, expression_parser)
+    statement_parser(expression_parser)
 {
     namespace phoenix = boost::phoenix;
     namespace qi = boost::spirit::qi;
+    using phoenix::construct;
     using phoenix::push_back;
     using qi::_1;
     using qi::_2;
@@ -44,19 +59,34 @@ function_parser_rules_t::function_parser_rules_t(
     using qi::_b;
     using qi::_c;
     using qi::_r1;
-    using qi::lit;
+    using qi::_r2;
+    using qi::_val;
+
+    const lexer_t& tok = adam_lexer();
+
+    lambda
+        =     '\\'
+        >>    function_specifier(_a, _b)
+              [
+                  _val = construct<any_regular_t>(make_function("<lambda>"_name, _a, _b))
+              ]
+        ;
 
     function
         =     tok.identifier [_a = _1]
-        >     '('
-        >>  - ((tok.identifier [push_back(_b, _1)]) % ',')
+        >     function_specifier(_b, _c)
+              [
+                  add_function(_r1, _a, make_function(_a, _b, _c))
+              ]
+        ;
+
+    function_specifier
+        =     '('
+        >>  - ((tok.identifier [push_back(_r1, _1)]) % ',')
         >     ')'
         >     '{'
-        >   * statement_parser.statement [push_back(_c, _1)]
-        >     lit('}')
-              [
-                  add_function(_r1, _a, _b, _c)
-              ]
+        >   * statement_parser.statement [push_back(_r2, _1)]
+        >     '}'
         ;
 
 
@@ -80,7 +110,7 @@ bool parse_functions(const std::string& functions,
     detail::s_filename = filename.c_str();
     token_iterator_t iter = adam_lexer().begin(it, detail::s_end);
     token_iterator_t end = adam_lexer().end();
-    function_parser_rules_t rules(adam_lexer(), adam_expression_parser());
+    function_parser_rules_t rules(adam_expression_parser());
     bool result =
         phrase_parse(iter,
                      end,

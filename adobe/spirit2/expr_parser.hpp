@@ -1,20 +1,7 @@
 #ifndef ADOBE_SPIRIT2_EXPR_PARSER_HPP
 #define ADOBE_SPIRIT2_EXPR_PARSER_HPP
 
-#include <adobe/spirit2/lexer.hpp>
-#include <adobe/array_fwd.hpp>
-#include <adobe/dictionary.hpp>
-#include <adobe/implementation/token.hpp>
-
-#include <boost/spirit/home/qi/action.hpp>
-#include <boost/spirit/home/qi/auxiliary.hpp>
-#include <boost/spirit/home/qi/char.hpp>
-#include <boost/spirit/home/qi/directive.hpp>
-#include <boost/spirit/home/qi/nonterminal.hpp>
-#include <boost/spirit/home/qi/numeric.hpp>
-#include <boost/spirit/home/qi/operator.hpp>
-
-#include <boost/spirit/include/phoenix.hpp>
+#include <adobe/spirit2/func_parser.hpp>
 
 
 namespace adobe { namespace spirit2 {
@@ -93,6 +80,8 @@ struct expression_parser_rules_t
         skipper_type_t
     > string;
     keyword_rule_t keyword;
+
+    function_parser_rules_t function_parser;
 };
 
 } }

@@ -30,12 +30,19 @@ BOOST_AUTO_TEST_CASE( function_parser )
     bool pass = spirit2::parse_functions(file_contents, g_input_file, functions);
     std::cout << (pass ? "PASS" : "FAIL") << "\n";
 
-#if 0 // TODO
     std::cout << functions.size() << " functions\n";
-    for (auto it = functions.begin(); it != functions.end(); ++it) {
-        std::cout << write_function(it->second) << "\n\n";
-    }
+    for (auto f : functions) {
+        std::cout << "   function \"" << f.second.name() << "\"\n";
+        for (auto s : f.second.statements()) {
+            std::cout << "     statment: ";
+            verbose_dump(s);
+            std::cout << "\n";
+        }
+
+#if 0 // TODO
+        std::cout << write_function(f.second) << "\n\n";
 #endif
+    }
 
     std::cout << "\n";
 

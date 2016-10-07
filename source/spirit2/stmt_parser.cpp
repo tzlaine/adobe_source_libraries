@@ -1,5 +1,8 @@
 #include <adobe/spirit2/stmt_parser.hpp>
 
+#include <adobe/spirit2/adam_parser.hpp>
+#include <adobe/spirit2/expr_parser.hpp>
+
 #include <adobe/implementation/token.hpp>
 
 
@@ -86,7 +89,6 @@ namespace {
 }
 
 statement_parser_rules_t::statement_parser_rules_t(
-    const lexer_t& lexer,
     const expression_parser_rules_t& expression_parser
 ) {
     namespace qi = boost::spirit::qi;
@@ -104,6 +106,7 @@ statement_parser_rules_t::statement_parser_rules_t(
     using qi::eps;
     using qi::lit;
 
+    const lexer_t& lexer = adam_lexer();
     lexer_t& tok = const_cast<lexer_t&>(lexer);
     auto const initial_size = tok.keywords.size();
     (void)initial_size;

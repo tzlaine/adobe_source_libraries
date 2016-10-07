@@ -1,17 +1,29 @@
 #ifndef ADOBE_SPIRIT2_STMT_PARSER_HPP
 #define ADOBE_SPIRIT2_STMT_PARSER_HPP
 
-#include <adobe/spirit2/expr_parser.hpp>
+#include <adobe/spirit2/lexer.hpp>
+#include <adobe/array_fwd.hpp>
+#include <adobe/dictionary.hpp>
+#include <adobe/implementation/token.hpp>
+
+#include <boost/spirit/home/qi/action.hpp>
+#include <boost/spirit/home/qi/auxiliary.hpp>
+#include <boost/spirit/home/qi/char.hpp>
+#include <boost/spirit/home/qi/directive.hpp>
+#include <boost/spirit/home/qi/nonterminal.hpp>
+#include <boost/spirit/home/qi/numeric.hpp>
+#include <boost/spirit/home/qi/operator.hpp>
+
+#include <boost/spirit/include/phoenix.hpp>
 
 
 namespace adobe { namespace spirit2 {
 
+struct expression_parser_rules_t;
+
 struct statement_parser_rules_t
 {
-    statement_parser_rules_t(
-        const lexer_t& lexer,
-        const expression_parser_rules_t& expression_parser
-    );
+    explicit statement_parser_rules_t(const expression_parser_rules_t& expression_parser);
 
     typedef boost::spirit::qi::rule<
         token_iterator_t,
