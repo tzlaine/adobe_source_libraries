@@ -50,6 +50,10 @@ function(setup_dep)
 endfunction()
 endif ()
 
+
+if (asl_install_directory)
+    set(double_conversion_install_directory ${asl_install_directory})
+endif()
 add_subdirectory(double-conversion)
 
 function(target_link_boost target)
