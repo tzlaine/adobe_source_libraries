@@ -18,7 +18,7 @@ function(asl_test)
     target_compile_options (${asl_test_NAME} PRIVATE "-Wno-unused-comparison")
   endif()
 
-  target_link_libraries(${asl_test_NAME} PRIVATE asl)
+  target_link_libraries(${asl_test_NAME} PRIVATE asl double-conversion)
 
   if (asl_test_BOOST)
     target_link_boost_test(${asl_test_NAME})

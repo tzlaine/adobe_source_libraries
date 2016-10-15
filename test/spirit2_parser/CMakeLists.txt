@@ -4,7 +4,7 @@ macro (make_test name)
         set(sources ${name}.cpp)
     endif ()
     add_executable (${name} ${sources})
-    target_link_libraries(${name} PRIVATE asl)
+    target_link_libraries(${name} PRIVATE asl double-conversion)
     target_link_boost_test(${name})
 endmacro ()
 
