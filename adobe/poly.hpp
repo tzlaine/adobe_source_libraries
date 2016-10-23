@@ -315,14 +315,12 @@ struct poly_base {
 
     template <typename J, template <typename> class K>
     static bool is_dynamic_convertible_from(const poly_base<J, K>& x) {
-        return boost::typeindex::type_id<I>() ==
-            static_cast<const poly_copyable_interface&>(x.interface_ref()).type_info();
+        return std::is_base_of<I, J>::value;
     }
 
     template <typename J>
     bool is_dynamic_convertible_to() const {
-        return boost::typeindex::type_id<J>() ==
-            static_cast<const poly_copyable_interface&>(interface_ref()).type_info();
+        return std::is_base_of<J, I>::value;
     }
 
     boost::typeindex::type_index type_info() const { return interface_ref().type_info(); }
