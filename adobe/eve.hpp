@@ -173,8 +173,7 @@ public:
         </tr>
     </table>
 
-    \param placeable must be a \ref poly_placeable_t (which might be
-    castable via \ref adobe::poly_cast a \ref poly_placeable_twopass_t).
+    \param placeable must be a \ref poly_placeable_t.
 
     \param reverse if \c false (default), this element should be added as
     last child of parent. If true, then the add as first child of
@@ -188,6 +187,14 @@ public:
 
     iterator add_placeable(iterator parent, const layout_attributes_t& initial,
                            bool is_container_type, poly_placeable_t& placeable,
+                           bool reverse = false);
+
+    /*!
+    \sa add_placeable
+    */
+
+    iterator add_placeable(iterator parent, const layout_attributes_t& initial,
+                           bool is_container_type, poly_placeable_twopass_t& placeable,
                            bool reverse = false);
 
     /*!

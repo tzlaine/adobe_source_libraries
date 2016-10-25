@@ -315,12 +315,12 @@ struct poly_base {
 
     template <typename J, template <typename> class K>
     static bool is_dynamic_convertible_from(const poly_base<J, K>& x) {
-        return std::is_base_of<I, J>::value;
+        return std::is_base_of<I, J>::value || std::is_base_of<J, I>::value;
     }
 
     template <typename J>
     bool is_dynamic_convertible_to() const {
-        return std::is_base_of<J, I>::value;
+        return std::is_base_of<I, J>::value || std::is_base_of<J, I>::value;
     }
 
     boost::typeindex::type_index type_info() const { return interface_ref().type_info(); }
@@ -425,109 +425,6 @@ public:
 
     poly() : F() {}
 };
-
-/*************************************************************************************************/
-
-/*!
-\ingroup poly_related
-
-Polymorphic cast from \ref poly \<U\> & to T&, where T is another \ref
-poly instance. Throws \ref adobe::bad_cast if x does not dynamically model
-T's Concept requirement. For example,
-
-\code
-  poly<base_concept> x(....);
-  //...
-  poly<refined_concept> & y = poly_cast<poly<refined_concept&>>(x);
-\endcode
-
-*/
-template <typename T, typename U>
-T poly_cast(poly<U>& x) {
-    typedef typename boost::remove_reference<T>::type target_type;
-    typedef typename target_type::interface_type target_interface_type;
-    if (!x.template is_dynamic_convertible_to<target_interface_type>())
-        throw bad_cast(boost::typeindex::type_id<poly<U>>(), boost::typeindex::type_id<T>());
-    return reinterpret_cast<T>(x);
-}
-
-/*************************************************************************************************/
-
-/*!
-
-\ingroup poly_related
-
-\sa poly_cast(poly <U>& x);
-*/
-
-template <typename T, typename U>
-T poly_cast(const poly<U>& x) {
-    typedef typename boost::remove_reference<T>::type target_type;
-    typedef typename target_type::interface_type target_interface_type;
-    if (!x.template is_dynamic_convertible_to<target_interface_type>())
-        throw bad_cast(boost::typeindex::type_id<poly<U>>(), boost::typeindex::type_id<T>());
-    return reinterpret_cast<T>(x);
-}
-
-/*************************************************************************************************/
-
-/*!
-\ingroup poly_related
-
-Polymorphic cast from \ref poly \<U\> * to T *, where T is another \ref
-poly instance. Returns NULL if x does not dynamically model T's
-Concept requirement. For example,
-
-\code
-  poly<base_concept> *x;
-  //...
-  poly<refined_concept> * y = poly_cast<poly<refined_concept *>>(x);
-\endcode
-
-*/
-
-template <typename T, typename U>
-T poly_cast(poly<U>* x) {
-    typedef typename boost::remove_pointer<T>::type target_type;
-    typedef typename target_type::interface_type target_interface_type;
-    return x->template is_dynamic_convertible_to<target_interface_type>() ? reinterpret_cast<T>(x)
-                                                                          : NULL;
-}
-
-/*************************************************************************************************/
-
-/*!
-
-\ingroup poly_related
-
-\sa poly_cast(poly <U>* x);
-*/
-
-
-template <typename T, typename U>
-T poly_cast(const poly<U>* x) {
-    typedef typename boost::remove_pointer<T>::type target_type;
-    typedef typename target_type::interface_type target_interface_type;
-    return x->template is_dynamic_convertible_to<target_interface_type>() ? reinterpret_cast<T>(x)
-                                                                          : NULL;
-}
-
-/*************************************************************************************************/
-
-/*!
-
-\ingroup poly_related
-
-\brief inequality comparison
-*/
-
-template <class T>
-inline bool operator!=(const poly<T>& x, const poly<T>& y) {
-    return !(x == y);
-}
-
-
-//! @}
 
 /*************************************************************************************************/
 

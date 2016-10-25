@@ -81,8 +81,10 @@ namespace implementation {
 
 struct view_proxy_t : adobe::extents_slices_t {
     view_proxy_t(const layout_attributes_t&, poly_placeable_t&);
+    view_proxy_t(const layout_attributes_t&, poly_placeable_twopass_t&);
 
-    poly_placeable_t& placeable_m;
+    poly_placeable_t* placeable_m;
+    poly_placeable_twopass_t* placeable_twopass_m;
 
     bool visible_m;
 
@@ -247,8 +249,10 @@ public:
 
     std::pair<int, int> evaluate(evaluate_options_t, int width, int height);
     std::pair<int, int> adjust(evaluate_options_t options, int width, int height);
+
+    template <typename Placeable>
     iterator add_placeable(iterator parent, const layout_attributes_t& initial,
-                           bool is_container_type, poly_placeable_t& placeable, bool reverse);
+                           bool is_container_type, Placeable& placeable, bool reverse);
     void set_visible(iterator, bool);
 
 private:
@@ -293,6 +297,13 @@ eve_t::iterator eve_t::add_placeable(iterator parent, const layout_attributes_t&
     return object_m->add_placeable(parent, initial, is_container_type, placeable, reverse);
 }
 
+eve_t::iterator eve_t::add_placeable(iterator parent, const layout_attributes_t& initial,
+                                     bool is_container_type,      // is the element a container?
+                                     poly_placeable_twopass_t& placeable, // signals to call for the element
+                                     bool reverse) {
+    return object_m->add_placeable(parent, initial, is_container_type, placeable, reverse);
+}
+
 void eve_t::set_visible(iterator c, bool visible) { return object_m->set_visible(c, visible); }
 
 /*************************************************************************************************/
@@ -316,10 +327,11 @@ eve_t::implementation_t::~implementation_t() {}
     as the initial parent.
 */
 
+template <typename Placeable>
 eve_t::iterator eve_t::implementation_t::add_placeable(iterator parent,
                                                        const layout_attributes_t& initial,
                                                        bool is_container_type,
-                                                       poly_placeable_t& placeable, bool reverse) {
+                                                       Placeable& placeable, bool reverse) {
     if (parent == iterator())
         parent = proxies_m.end();
 
@@ -494,7 +506,12 @@ struct calculate : public boost::static_visitor<> {
 /*************************************************************************************************/
 
 view_proxy_t::view_proxy_t(const adobe::layout_attributes_t& d, poly_placeable_t& p)
-    : placeable_m(p), visible_m(true), geometry_m(d) {}
+    : placeable_m(&p), placeable_twopass_m(nullptr), visible_m(true), geometry_m(d) {}
+
+/*************************************************************************************************/
+
+view_proxy_t::view_proxy_t(const adobe::layout_attributes_t& d, poly_placeable_twopass_t& p)
+    : placeable_m(nullptr), placeable_twopass_m(&p), visible_m(true), geometry_m(d) {}
 
 /*************************************************************************************************/
 
@@ -511,7 +528,10 @@ void view_proxy_t::calculate() {
     */
     geometry_m.extents_m = extents_t();
 
-    placeable_m.measure(geometry_m.extents_m);
+    if (placeable_m)
+        placeable_m->measure(geometry_m.extents_m);
+    else
+        placeable_twopass_m->measure(geometry_m.extents_m);
 
     extents_t::slice_t& eslice = geometry_m.extents_m.horizontal();
 
@@ -546,10 +566,10 @@ void view_proxy_t::calculate() {
 void view_proxy_t::calculate_vertical() {
     extents_t::slice_t& eslice = geometry_m.extents_m.vertical();
 
-    if (poly_placeable_twopass_t* p = poly_cast<poly_placeable_twopass_t*>(&placeable_m)) {
+    if (placeable_twopass_m) {
         // We pass a copy of the geometry so client can't modify horizontal properties.
         extents_t vertical_stuff(geometry_m.extents_m);
-        p->measure_vertical(vertical_stuff, place_m);
+        placeable_twopass_m->measure_vertical(vertical_stuff, place_m);
         eslice = vertical_stuff.vertical();
     }
 
@@ -564,7 +584,12 @@ void view_proxy_t::calculate_vertical() {
 
 /*************************************************************************************************/
 
-void view_proxy_t::place() { placeable_m.place(place_m); }
+void view_proxy_t::place() {
+    if (placeable_m)
+        placeable_m->place(place_m);
+    else
+        placeable_twopass_m->place(place_m);
+}
 
 /*************************************************************************************************/
 
